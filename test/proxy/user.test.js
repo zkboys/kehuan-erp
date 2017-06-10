@@ -8,9 +8,9 @@ describe('test/proxy/user.test.js', function () {
         // it.skip(...)
         // it.only(...)
 
-        it('should return an user and user.loginname==admin', async() => {
+        it('should return an user and user.loginName==admin', async() => {
             const user = await userProxy.getUserByLoginName('admin');
-            user.loginname.should.equal('admin');
+            user.loginName.should.equal('admin');
         });
     });
 });

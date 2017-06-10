@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
     name: {type: String},
-    loginname: {type: String},
+    loginName: {type: String},
     pass: {type: String},
     salt: {type: String},
     email: {type: String},
@@ -21,7 +21,7 @@ UserSchema.virtual('avatar_url').get(function () {
     return this.avatar;
 });
 
-UserSchema.index({loginname: 1}, {unique: true});
+UserSchema.index({loginName: 1}, {unique: true});
 
 UserSchema.pre('save', function (next) {
     this.update_at = new Date();

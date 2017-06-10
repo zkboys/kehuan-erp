@@ -130,7 +130,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             favicon: './favicon.png',
             filename: 'index.html',
             template: './index.html',
-            title: 'REACT管理系统架构',
+            title: '科环集成墙板有限公司',
             inject: true,
             minify: {
                 removeComments: true,

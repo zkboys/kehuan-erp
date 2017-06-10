@@ -4,8 +4,8 @@ const authMiddleWare = require('../middlewares/auth');
 const userService = require('../service/user');
 
 exports.login = controllerDecorator(async function (req, res, next) {
-    const loginName = req.body.name;
-    const pass = req.body.pass;
+    const loginName = req.body.userName;
+    const pass = req.body.password;
 
     const user = await userService.getUserByLoginNameAndPass(loginName, pass);
     user.permissions = await userService.getUserPermissions(user);

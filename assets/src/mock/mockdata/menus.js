@@ -1,5 +1,39 @@
 export default [
     {
+        key: 'organization',
+        text: '组织管理',
+        icon: 'fa-users',
+        path: '',
+    },
+    {
+        key: 'organization-org',
+        parentKey: 'organization',
+        text: '组织架构',
+        icon: 'fa-sitemap',
+        path: '/organization/organizations',
+    },
+    {
+        key: 'organization-users',
+        parentKey: 'organization',
+        text: '人员管理',
+        icon: 'fa-user',
+        path: '/organization/users',
+    },
+    {
+        key: 'organization-role',
+        parentKey: 'organization',
+        text: '角色管理',
+        icon: 'fa-lock',
+        path: '/organization/roles',
+    },
+    {
+        key: 'organization-menu',
+        parentKey: 'organization',
+        text: '菜单&权限',
+        icon: 'fa-th-list',
+        path: '/organization/menus',
+    },
+    {
         key: 'example',
         text: 'Example',
         icon: 'fa-file-code-o',

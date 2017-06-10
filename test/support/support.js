@@ -4,7 +4,7 @@ const tools = require('../../common/tools');
     const admin = await userProxy.getUserByLoginName('admin');
     const adminCookie = 'mock_user=' + JSON.stringify({
             _id: admin._id,
-            loginname: admin.loginname,
+            loginName: admin.loginName,
             pass: admin.pass,
             salt: admin.salt,
             role_id: admin.role_id,

@@ -25,7 +25,7 @@ exports.updateAllMenus = function (newMenu) {
  * @returns {Query|T|*}
  */
 exports.getMenusByUser = function (user) {
-    if (user.loginname === config.admin_name) { // 登录名为admin的用户拥有所有权限
+    if (user.loginName === config.admin_name) { // 登录名为admin的用户拥有所有权限
         return MenuModel.find({}).lean();
     } else {
         return MenuModel.find({'key': {'$in': user.permissions}}).lean();

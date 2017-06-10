@@ -39,7 +39,7 @@ exports.getUsersCountByQuery = function (queries = {}) {
 };
 
 exports.getUsersByNames = function (names) {
-    return UserModel.find({loginname: {$in: names}}).lean();
+    return UserModel.find({loginName: {$in: names}}).lean();
 };
 
 exports.addUser = function (user) {
@@ -47,12 +47,12 @@ exports.addUser = function (user) {
 };
 
 exports.getUserByLoginName = function (loginName) {
-    return UserModel.findOne({'loginname': new RegExp('^' + loginName + '$', "i"), is_deleted: false}).lean();
+    return UserModel.findOne({'loginName': new RegExp('^' + loginName + '$', "i"), is_deleted: false}).lean();
 };
 
 
 exports.getUserByLoginNameFromAllUsers = function (loginName) {
-    return UserModel.findOne({'loginname': new RegExp('^' + loginName + '$', "i")}).lean();
+    return UserModel.findOne({'loginName': new RegExp('^' + loginName + '$', "i")}).lean();
 };
 
 exports.update = function (user) {

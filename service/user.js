@@ -92,7 +92,7 @@ exports.resetUserPass = async function (userId) {
         throw new ServiceError(message.userIsNotExisted);
     }
 
-    const initPass = user.loginname[0] + '123456';
+    const initPass = user.loginName[0] + '123456';
     user.pass = await tools.bhash(initPass + user.salt);
     user.is_first_login = true;
 
@@ -143,7 +143,7 @@ exports.updateUser = async function (user) {
 };
 
 exports.addUser = async function (user) {
-    const loginName = trim(user.loginname);
+    const loginName = trim(user.loginName);
 
     if (!loginName) {
         throw new ServiceError(message.loginNameCanNotBeNull);
@@ -167,7 +167,7 @@ exports.addUser = async function (user) {
     const salt = uuid.v4();
     const initHashedPass = await tools.bhash(initPass + salt);
 
-    user.name = user.name || user.loginname;
+    user.name = user.name || user.loginName;
     user.pass = initHashedPass;
     user.salt = salt;
 

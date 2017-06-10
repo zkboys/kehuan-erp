@@ -2,7 +2,7 @@ const config = require('../config');
 exports = module.exports = function (key) {
     return function (req, res, next) {
         const currentLoginUser = req.session.user;
-        if (currentLoginUser.loginname === config.admin_name) {
+        if (currentLoginUser.loginName === config.admin_name) {
             return next();
         }
 

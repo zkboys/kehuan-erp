@@ -6,7 +6,7 @@ const config = {
     port: process.env.PORT || 3000,
 
     // mongodb 配置
-    db: 'mongodb://127.0.0.1/org_dev',
+    db: 'mongodb://127.0.0.1/kehuan',
 
     // redis 配置，默认是本地
     redis_host: '127.0.0.1',

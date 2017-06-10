@@ -49,11 +49,12 @@ class Login extends Component {
                 const {userName, password} = values;
                 this.setState({loading: true, errorMessage: ''});
                 // TODO 修改url，考虑着两个请求是否可以合并为一个？
-                promiseAjax.post('/mock/login', {userName, password}, {errorTip: false}).then(res => {
+                promiseAjax.post('/signin', {userName, password}, {errorTip: false}).then(res => {
+                    const user = res.user;
                     const currentLoginUser = {
-                        id: res.id,
-                        name: res.name,
-                        loginName: res.loginName,
+                        id: user._id,
+                        name: user.name,
+                        loginName: user.loginName,
                     };
                     initStorage({
                         keyPrefix: currentLoginUser.id,
@@ -68,7 +69,8 @@ class Login extends Component {
                     });
                 }).catch(error => {
                     console.log(error);
-                    this.setState({loading: false, errorMessage: error.message});
+                    const errorMessage = error.response && error.response.data && error.response.data.message;
+                    this.setState({loading: false, errorMessage});
                 });
             }
         });

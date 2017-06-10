@@ -41,7 +41,7 @@ router.put('/api/system/message', userRequired, /*needCurrentUser*/ user.update)
 // 用户
 router.get('/api/organization/users', userRequired, permission('user-search'), user.getByPage);
 router.get('/api/organization/users/:id', userRequired, user.getById);
-router.get('/api/organization/users/loginname/:loginname', userRequired, user.getByLoginNameFromAll);
+router.get('/api/organization/users/loginName/:loginName', userRequired, user.getByLoginNameFromAll);
 router.post('/api/organization/users', userRequired, permission('user-add'), user.addAndSave);
 router.put('/api/organization/users', userRequired, permission('user-update'), user.update);
 router.put('/api/organization/users/reset_pass', userRequired, permission('user-reset-pass'), user.resetPass);

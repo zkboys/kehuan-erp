@@ -6,7 +6,6 @@ import {FontIcon} from 'zk-react/antd';
 import {getScrollBarWidth} from 'zk-react/utils';
 import connectComponent from '../redux/store/connectComponent';
 
-
 const SubMenu = Menu.SubMenu;
 
 class LayoutComponent extends Component {
@@ -69,7 +68,7 @@ class LayoutComponent extends Component {
         const innerOverFlow = sideBarCollapsed ? '' : 'scroll';
         const scrollBarWidth = getScrollBarWidth();
         const innerWidth = (sideBarWidth + scrollBarWidth) - 1; // 1 为outer 的 border
-        const logo = sideBarCollapsed ? 'ZK' : '管理系统架构';
+        const logo = sideBarCollapsed ? '科环' : '科环集成墙板有限公司';
 
         if (!currentSideBarMenuNode) currentSideBarMenuNode = {};
         return (
