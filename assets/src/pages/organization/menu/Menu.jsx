@@ -5,7 +5,6 @@ import {uniqueArray} from 'zk-react/utils';
 import {
     renderNode,
     convertToTree,
-    getNodeByKey,
 } from 'zk-react/utils/tree-utils';
 
 const TreeNode = Tree.TreeNode;
@@ -18,6 +17,7 @@ export const PAGE_ROUTE = '/organization/menus';
 export default class extends Component {
     state = {
         treeData: [],
+        data: [],
         expandedKeys: [],
         selectedKeys: [],
     };
@@ -104,23 +104,7 @@ export default class extends Component {
                 path: '/role/list',
             },
         ];
-        this.setDataAndTreeDataToState(data);
-    }
-
-    setDataAndTreeDataToState(data) {
-        // 根据order 排序
-        const orderedData = [...data].sort((a, b) => {
-            const aOrder = a.order || 0;
-            const bOrder = b.order || 0;
-
-            // 如果order都不存在，根据 text 排序
-            if (!aOrder && !bOrder) {
-                return a.text > b.text ? 1 : -1;
-            }
-            return bOrder - aOrder;
-        });
-        const treeData = convertToTree(orderedData);
-        this.setState({data, treeData});
+        this.setState({data});
     }
 
     handleAddNewNode = (type) => {
@@ -149,7 +133,7 @@ export default class extends Component {
         };
         data.push(newNode);
         setFieldsValue(newNode);
-        this.setDataAndTreeDataToState(data);
+        this.setState({data});
         let expandedKeys = [...this.state.expandedKeys];
         expandedKeys.push(NEW_NODE_KEY);
         expandedKeys.push(parentKey);
@@ -161,15 +145,32 @@ export default class extends Component {
         this.setState({expandedKeys});
     };
 
+    getTreeData() {
+        const {data} = this.state;
+        // 根据order 排序
+        const orderedData = [...data].sort((a, b) => {
+            const aOrder = a.order || 0;
+            const bOrder = b.order || 0;
+
+            // 如果order都不存在，根据 text 排序
+            if (!aOrder && !bOrder) {
+                return a.text > b.text ? 1 : -1;
+            }
+            return bOrder - aOrder;
+        });
+        return convertToTree(orderedData);
+    }
+
     handleTreeSelect = (selectedKeys) => {
-        const {treeData, data} = this.state;
+        const {data} = this.state;
+
         // 有新添加的节点未保存
         const existedNewNode = data.find(item => item.key === NEW_NODE_KEY);
         if (existedNewNode) {
             return message.error('您有未保存的新增节点！', 3);
         }
 
-        const selectedNode = getNodeByKey(treeData, selectedKeys[0]);
+        const selectedNode = data.find(item => item.key === selectedKeys[0]);
         if (selectedNode) {
             const {setFieldsValue} = this.props.form;
             if (selectedNode.type === 'menu') {
@@ -213,7 +214,7 @@ export default class extends Component {
                 if (existedNewMenu) { // 添加顶级 添加子级
                     newData = data.filter(item => item.key !== NEW_NODE_KEY);
                     newData.push(savedMenu);
-                    this.setDataAndTreeDataToState(newData);
+                    this.setState({data: newData});
                     this.setState({selectedKeys: [savedMenu.key]});
                 }
             }
@@ -229,13 +230,13 @@ export default class extends Component {
         const key = selectedKeys[0];
         if (key === NEW_NODE_KEY) {
             const newData = data.filter(item => item.key !== NEW_NODE_KEY);
-            this.setDataAndTreeDataToState(newData);
+            this.setState({data: newData});
             this.props.form.resetFields();
             this.setState({selectedKeys: []});
         } else {
             // TODO 发送ajax 请求，删除后端数据
             const newData = data.filter(item => item.key !== key);
-            this.setDataAndTreeDataToState(newData);
+            this.setState({data: newData});
             this.props.form.resetFields();
             this.setState({selectedKeys: []});
         }
@@ -243,7 +244,8 @@ export default class extends Component {
 
     render() {
         const {form: {getFieldDecorator, getFieldValue, setFieldsValue}} = this.props;
-        const {treeData, selectedKeys, expandedKeys} = this.state;
+        const {selectedKeys, expandedKeys} = this.state;
+        const treeData = this.getTreeData();
 
         const treeNode = renderNode(treeData, (item, children) => {
             let text = item.text;
