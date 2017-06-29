@@ -152,7 +152,7 @@ export default class SystemRoleEdit extends Component {
                                         initialValue: role.description,
                                         rules: [],
                                     })(
-                                        <Input placeholder="请输入描述"/>
+                                        <Input type="textarea" placeholder="请输入描述"/>
                                     )}
                                 </FormItemLayout>
 

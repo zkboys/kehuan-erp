@@ -19,3 +19,20 @@ exports.updateAllOrganizations = function (newOrganizations) {
     });
 };
 
+exports.add = function (data) {
+    return new OrganizationModel(data).save();
+};
+
+
+exports.update = function (data) {
+    data.update_at = new Date();
+    return OrganizationModel.findOneAndUpdate({key: data.key}, data).lean();
+};
+
+exports.deleteByKey = function (key) {
+    return OrganizationModel.remove({key}).lean();
+};
+
+exports.deleteByKeys = function (keys) {
+    return OrganizationModel.remove({key: {'$in': keys}}).lean();
+};

@@ -11,6 +11,7 @@ export default class extends Component {
         total: 0,
         dataSource: [],
         roles: [],
+        organizations: [],
     };
 
     queryItems = [
@@ -56,7 +57,17 @@ export default class extends Component {
     columns = [
         {title: '用户名', dataIndex: 'name', key: 'name'},
         {title: '登录名', dataIndex: 'loginName', key: 'loginName'},
-        {title: '所属机构', dataIndex: 'org_key', key: 'org_key'},
+        {
+            title: '所属机构',
+            dataIndex: 'org_key',
+            key: 'org_key',
+            render: (text) => {
+                const {organizations} = this.state;
+                const org = organizations.find(item => item.key === text);
+                if (org) return org.name;
+                return '未选择机构';
+            },
+        },
         {title: '电话', dataIndex: 'mobile', key: 'mobile'},
         {title: '邮箱', dataIndex: 'email', key: 'email'},
         {title: '性别', dataIndex: 'gender', key: 'gender'},
@@ -128,6 +139,9 @@ export default class extends Component {
     componentWillMount() {
         this.props.$ajax.get('/system/roles/all').then(res => {
             this.setState({roles: res});
+        });
+        this.props.$ajax.get('/system/organizations').then(res => {
+            this.setState({organizations: res});
         });
     }
 

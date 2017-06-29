@@ -18,17 +18,9 @@ export default class extends Component {
     };
 
     componentWillMount() {
-        // TODO: 获取所有org
-        this.props.$ajax.get('/v1/sys/org/domain/1').then(res => {
-            console.log(res);
-            const list = res.organizationList || [];
-            const dataSource = list.map(item => {
-                return {
-                    key: item.code,
-                    parentKey: item.parentCode,
-                    text: item.name,
-                };
-            });
+        this.props.$ajax.get('/system/organizations').then(res => {
+            const dataSource = (res || []).map(item => ({text: item.name, ...item}));
+            console.log(dataSource);
             this.setState({dataSource});
         });
     }
@@ -49,12 +41,13 @@ export default class extends Component {
 
     handleTreeSelect = (selectedNode) => {
         if (selectedNode) {
+            console.log(selectedNode);
             const {setFieldsValue} = this.props.form;
             setFieldsValue({
                 key: selectedNode.key,
                 parentKey: selectedNode.parentKey,
-                domainId: selectedNode.domainId,
-                text: selectedNode.text,
+                text: selectedNode.name,
+                description: selectedNode.description,
                 order: selectedNode.order,
             });
             this.setState({selectedKey: selectedNode.key});
@@ -63,29 +56,36 @@ export default class extends Component {
 
     handleSubmit = (values) => {
         const {dataSource} = this.state;
+        const {$ajax} = this.props;
         const existedNewNode = dataSource.find(item => item.key === UN_SAVED_NEW_NODE_KEY);
+        let successTip;
+        values.name = values.text;
         if (existedNewNode) { // 添加顶级或者子级
-            this.props.$ajax.post('/v1/sys/org', values).then(res => {
-                // TODO: 处理数据key，页面上数据替换成真实的key
-                console.log(res);
+            values.key = null;
+            successTip = '添加成功！';
+            $ajax.post('/system/organizations', values, {successTip}).then(res => {
+                const savedNode = res;
+                const newData = dataSource.filter(item => item.key !== UN_SAVED_NEW_NODE_KEY);
+                savedNode.text = savedNode.name;
+                newData.push(savedNode);
+                this.setState({
+                    dataSource: newData,
+                    selectedKey: savedNode.key,
+                });
+                this.handleTreeSelect(savedNode);
             });
         } else {
-            console.log('update:', values);
-            this.props.$ajax.put('/v1/sys/org', values).then(res => {
-                console.log(res);
+            successTip = '修改成功！';
+            $ajax.put('/system/organizations', values, {successTip}).then(() => {
+                const newData = dataSource.filter(item => item.key !== values.key);
+                newData.push(values);
+                this.setState({
+                    dataSource: newData,
+                    selectedKey: values.key,
+                });
+                this.handleTreeSelect(values);
             });
         }
-
-        // values.key = `${new Date().getTime()}`;
-        // const savedMenu = values;
-        // if (existedNewNode) { // 添加顶级 添加子级
-        //     newData = dataSource.filter(item => item.key !== UN_SAVED_NEW_NODE_KEY);
-        //     newData.push(savedMenu);
-        //     this.setState({
-        //         dataSource: newData,
-        //         selectedKey: savedMenu.key,
-        //     });
-        //     t
     };
 
     handleDelete = () => {
@@ -96,7 +96,7 @@ export default class extends Component {
             this.props.form.resetFields();
             this.setState({selectedKey: ''});
         } else {
-            this.props.$ajax.del(`/v1/sys/org/${selectedKey}`, null, {successTip: '删除成功！'}).then(() => {
+            this.props.$ajax.del(`/system/organizations/${selectedKey}`, null, {successTip: '删除成功！'}).then(() => {
                 this.props.form.resetFields();
                 const deletedNods = getGenerationsByKey(dataSource, selectedKey);
                 const deletedNodKeys = deletedNods.map(item => item.key);
@@ -141,6 +141,17 @@ export default class extends Component {
                                 rules: [{required: true, message: '请输入名称！'}],
                             })(
                                 <Input placeholder="请输入名称" disabled={disabled}/>
+                            )}
+                        </FormItemLayout>
+                        <FormItemLayout
+                            label="描述"
+                            labelSpaceCount={labelSpaceCount}
+                            width={formItemWidth}
+                        >
+                            {getFieldDecorator('description', {
+                                rules: [{required: false, message: '请输入描述！'}],
+                            })(
+                                <Input type="textarea" placeholder="请输入描述" disabled={disabled}/>
                             )}
                         </FormItemLayout>
                         <FormItemLayout

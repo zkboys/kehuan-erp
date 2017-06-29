@@ -27,14 +27,16 @@ router.post('/api/signout', sign.signout);
 router.put('/api/first_login', userRequired, sign.firstLogin);
 
 // 菜单
-router.get('/api/system/menus', userRequired, menu.getMenus);
-router.post('/api/system/menus', userRequired, menu.addMenu);
-router.put('/api/system/menus', userRequired, menu.updateMenu);
-router.delete('/api/system/menus/:id', userRequired, menu.deleteMenu);
+router.get('/api/system/menus', userRequired, menu.getAll);
+router.post('/api/system/menus', userRequired, menu.add);
+router.put('/api/system/menus', userRequired, menu.update);
+router.delete('/api/system/menus/:key', userRequired, menu.deleteByKey);
 
 // 组织架构
-router.get('/api/system/organizations', userRequired, /*permission('organization-search'),*/ organization.getAll);// 这里不要添加权限限制，也不会产生安全性问题，而且用户相关会用到这个接口。
-router.post('/api/system/organizations', userRequired, permission('organization-update'), organization.updateAll);
+router.get('/api/system/organizations', userRequired, organization.getAll);// 这里不要添加权限限制，也不会产生安全性问题，而且用户相关会用到这个接口。
+router.post('/api/system/organizations', userRequired, permission('ORGANIZATION_ADD'), organization.add);
+router.put('/api/system/organizations', userRequired, permission('ORGANIZATION_UPDATE'), organization.update);
+router.delete('/api/system/organizations/:key', userRequired, permission('ORGANIZATION_DELETE'), organization.deleteByKey);
 
 // 系统
 router.put('/api/system/pass', userRequired, /*needCurrentUser*/ user.updatePass);

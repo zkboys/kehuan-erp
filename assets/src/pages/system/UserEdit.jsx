@@ -94,8 +94,8 @@ export default class SystemUserEdit extends Component {
                         label="所属机构"
                         {...formItemLayout}
                     >
-                        {getFieldDecorator('org_id', {
-                            initialValue: user.org_id,
+                        {getFieldDecorator('org_key', {
+                            initialValue: user.org_key,
                             rules: [{
                                 required: false, message: '请选择所属机构！',
                             }],

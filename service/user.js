@@ -110,7 +110,7 @@ exports.getUserPermissions = async function (user) {
 };
 
 exports.getUserMenus = async function (user) {
-    return await MenuProxy.getMenusByUser(user);
+    return await MenuProxy.getByUser(user);
 };
 
 exports.getUserById = async function (userId) {

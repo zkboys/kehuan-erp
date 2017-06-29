@@ -15,14 +15,11 @@ export default class DomainSelect extends Component {
     };
 
     componentWillMount() {
-        // TODO: 获取所有org
         this.props.$ajax.get('/system/organizations').then(res => {
-            console.log(res);
-            const list = res.organizationList || [];
+            const list = res || [];
             const data = list.map(item => {
                 return {
-                    key: item.code,
-                    parentKey: item.parentCode,
+                    ...item,
                     text: item.name,
                 };
             });
