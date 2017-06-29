@@ -27,34 +27,37 @@ router.post('/api/signout', sign.signout);
 router.put('/api/first_login', userRequired, sign.firstLogin);
 
 // 菜单
-router.get('/api/system/menus', userRequired, menu.getAllMenus);
-router.post('/api/system/menus', userRequired, menu.updateAllMenus);
+router.get('/api/system/menus', userRequired, menu.getMenus);
+router.post('/api/system/menus', userRequired, menu.addMenu);
+router.put('/api/system/menus', userRequired, menu.updateMenu);
+router.delete('/api/system/menus/:id', userRequired, menu.deleteMenu);
 
 // 组织架构
-router.get('/api/organization/organizations', userRequired, /*permission('organization-search'),*/ organization.getAll);// 这里不要添加权限限制，也不会产生安全性问题，而且用户相关会用到这个接口。
-router.post('/api/organization/organizations', userRequired, permission('organization-update'), organization.updateAll);
+router.get('/api/system/organizations', userRequired, /*permission('organization-search'),*/ organization.getAll);// 这里不要添加权限限制，也不会产生安全性问题，而且用户相关会用到这个接口。
+router.post('/api/system/organizations', userRequired, permission('organization-update'), organization.updateAll);
 
 // 系统
 router.put('/api/system/pass', userRequired, /*needCurrentUser*/ user.updatePass);
 router.put('/api/system/message', userRequired, /*needCurrentUser*/ user.update);
 
 // 用户
-router.get('/api/organization/users', userRequired, permission('user-search'), user.getByPage);
-router.get('/api/organization/users/:id', userRequired, user.getById);
-router.get('/api/organization/users/loginName/:loginName', userRequired, user.getByLoginNameFromAll);
-router.post('/api/organization/users', userRequired, permission('user-add'), user.addAndSave);
-router.put('/api/organization/users', userRequired, permission('user-update'), user.update);
-router.put('/api/organization/users/reset_pass', userRequired, permission('user-reset-pass'), user.resetPass);
-router.delete('/api/organization/users', userRequired, permission('user-delete'), user.delete);
-router.put('/api/organization/users/toggle_lock', userRequired, permission('user-toggle-lock'), user.toggleLock);
+router.get('/api/system/users', userRequired, permission('USER_SEARCH'), user.getByPage);
+router.get('/api/system/users/:id', userRequired, user.getById);
+router.get('/api/system/users/loginName/:loginName', userRequired, user.getByLoginNameFromAll);
+router.post('/api/system/users', userRequired, permission('USER_ADD'), user.addAndSave);
+router.put('/api/system/users', userRequired, permission('USER_UPDATE'), user.update);
+router.put('/api/system/users/reset_pass', userRequired, permission('USER_RESET_PASS'), user.resetPass);
+router.delete('/api/system/users/:id', userRequired, permission('USER_DELETE'), user.delete);
+router.put('/api/system/users/toggle_lock', userRequired, permission('USER_TOGGLE_LOCK'), user.toggleLock);
 
 // 角色
-router.get('/api/organization/roles', userRequired, /* permission('role-search'), */role.getByPage); // 这里不要添加权限限制，也不会产生安全性问题，而且用户相关会用到这个接口。
-router.get('/api/organization/roles/:id', userRequired, role.getById);
-router.get('/api/organization/roles/name/:name', userRequired, role.getByRoleNameFromAll);
-router.post('/api/organization/roles', userRequired, permission('role-add'), role.addAndSave);
-router.put('/api/organization/roles', userRequired, permission('role-update'), role.update);
-router.delete('/api/organization/roles', userRequired, permission('role-delete'), role.delete);
+router.get('/api/system/roles', userRequired, role.getByPage); // 这里不要添加权限限制，也不会产生安全性问题，而且用户相关会用到这个接口。
+router.get('/api/system/roles/all', userRequired, role.getAllRoles); // 这里不要添加权限限制，也不会产生安全性问题，而且用户相关会用到这个接口。
+router.get('/api/system/roles/:id', userRequired, role.getById);
+router.get('/api/system/roles/name/:name', userRequired, role.getByRoleNameFromAll);
+router.post('/api/system/roles', userRequired, permission('ROLE_ADD'), role.addAndSave);
+router.put('/api/system/roles', userRequired, permission('ROLE_UPDATE'), role.update);
+router.delete('/api/system/roles/:id', userRequired, permission('ROLE_DELETE'), role.delete);
 
 router.get('*', userRequired, function (req, res, next) {
     //  根据约定 区分不同得请求类型，返回不同的数据。

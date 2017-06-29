@@ -39,7 +39,7 @@ exports.getByLoginNameFromAll = controllerDecorator(async function (req, res, ne
 });
 
 exports.delete = controllerDecorator(async function (req, res, next) {
-    const id = req.body.id;
+    const id = req.params.id;
     await UserService.deleteUserById(id);
     res.sendSuccess();
 });
@@ -58,9 +58,9 @@ exports.update = controllerDecorator(async function (req, res, next) {
 });
 
 exports.updatePass = controllerDecorator(async function (req, res, next) {
-    const newPass = req.body.pass;
-    const newPassRepeat = req.body.rePass;
-    const oldPass = req.body.orPass;
+    const newPass = req.body.newPass;
+    const newPassRepeat = req.body.reNewPass;
+    const oldPass = req.body.oldPass;
     const currentLoginUser = req.session.user;
     const userId = currentLoginUser._id;
 

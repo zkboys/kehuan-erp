@@ -92,7 +92,7 @@ exports.resetUserPass = async function (userId) {
         throw new ServiceError(message.userIsNotExisted);
     }
 
-    const initPass = user.loginName[0] + '123456';
+    const initPass = 111111;
     user.pass = await tools.bhash(initPass + user.salt);
     user.is_first_login = true;
 
@@ -143,6 +143,7 @@ exports.updateUser = async function (user) {
 };
 
 exports.addUser = async function (user) {
+    console.log(user);
     const loginName = trim(user.loginName);
 
     if (!loginName) {
@@ -157,7 +158,7 @@ exports.addUser = async function (user) {
         throw new ServiceError(message.loginNameInvalid);
     }
     // TODO 对其他字段进行校验
-    const initPass = loginName[0] + 123456;
+    const initPass = 111111;
     const existedUser = await UserProxy.getUserByLoginNameFromAllUsers(loginName);
 
     if (existedUser) {

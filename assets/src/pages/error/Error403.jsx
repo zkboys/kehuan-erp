@@ -3,10 +3,9 @@ import {Button} from 'antd';
 import error403 from './403.png';
 import './style.less';
 
-
 export const PAGE_ROUTE = '/error/403';
 
-export class LayoutComponent extends Component {
+export default class Error403 extends Component {
     state = {
         remainSecond: 9,
     }
@@ -38,13 +37,13 @@ export class LayoutComponent extends Component {
     render() {
         const {remainSecond} = this.state;
         return (
-            <div className="error-page">
+            <div styleName="error-page">
                 <img src={error403} alt="401图片"/>
-                <p className="error-text">非常抱歉，您没权访问此页面！</p>
-                <p className="error-text error-sub-text">{remainSecond} 秒后返回上一个页面...</p>
+                <p styleName="error-text">非常抱歉，您没权访问此页面！</p>
+                <p styleName="error-text error-sub-text">{remainSecond} 秒后返回上一个页面...</p>
                 <Button
                     type="primary"
-                    className="error-btn"
+                    styleName="error-btn"
                     onClick={this.props.router.goBack}
                 >
                     马上返回

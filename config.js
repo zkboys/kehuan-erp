@@ -19,6 +19,7 @@ const config = {
     auth_cookie_name: 'org_structure',
     admin_name: 'admin', // 超级管理员，拥有所有的权限
     session_time_out: isDebug ? 30 * 60 * 1000 : 30 * 60 * 1000, // session过期时间
+    allow_origin: 'http://localhost:3002',
 };
 
 module.exports = config;

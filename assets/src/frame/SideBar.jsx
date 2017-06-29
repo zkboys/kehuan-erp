@@ -1,26 +1,38 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router';
 import {Menu} from 'antd';
-import {renderNode} from 'zk-react/utils/tree-utils';
-import {FontIcon} from 'zk-react/antd';
-import {getScrollBarWidth} from 'zk-react/utils';
-import connectComponent from '../redux/store/connectComponent';
+import Rnd from 'react-rnd';
+import {renderNode} from 'zk-tookit/utils/tree-utils';
+import {FontIcon} from 'zk-tookit/antd';
+import {getScrollBarWidth, getWindowSize} from 'zk-tookit/utils';
+import {domEvent} from 'zk-tookit/react';
+import connectComponent from '../redux/store/connect-component';
 
 const SubMenu = Menu.SubMenu;
 
+@domEvent()
 class LayoutComponent extends Component {
-    componentDidMount() {
-
+    state = {
+        windowHeight: 600,
     }
+
+    componentDidMount() {
+        this.handleWindowResize();
+        this.props.$addEventListener(window, 'resize', this.handleWindowResize);
+    }
+
+    handleWindowResize = () => {
+        this.setState({windowHeight: getWindowSize().height});
+    };
 
     handleToggleSideBar = () => {
         const {actions} = this.props;
         actions.toggleSideBar();
-    }
+    };
     handleOpenChange = (openKeys) => {
         const {actions} = this.props;
         actions.setSystemMenuOpenKeys(openKeys);
-    }
+    };
 
     renderMenus() {
         const {currentTopMenuNode, sideBarCollapsed} = this.props;
@@ -60,19 +72,21 @@ class LayoutComponent extends Component {
     }
 
     render() {
+        let {windowHeight} = this.state;
         let {currentSideBarMenuNode} = this.props;
-        const {menuOpenKeys, sideBarCollapsed, showSideBar} = this.props;
-        const sideBarWidth = sideBarCollapsed ? 60 : 200;
+        const headerHeight = 56;
+        const {menuOpenKeys, sideBarCollapsed, showSideBar, sideBarMinWidth, sideBarWidth} = this.props;
+        const sideBarCurrentWidth = sideBarCollapsed ? sideBarMinWidth : sideBarWidth;
         const mode = sideBarCollapsed ? 'vertical' : 'inline';
         const outerOverFlow = sideBarCollapsed ? 'visible' : 'hidden';
         const innerOverFlow = sideBarCollapsed ? '' : 'scroll';
         const scrollBarWidth = getScrollBarWidth();
-        const innerWidth = (sideBarWidth + scrollBarWidth) - 1; // 1 为outer 的 border
-        const logo = sideBarCollapsed ? '科环' : '科环集成墙板有限公司';
+        const innerWidth = sideBarCollapsed ? sideBarCurrentWidth - 1 : (sideBarCurrentWidth + scrollBarWidth) - 1; // 1 为outer 的 border
+        const logo = sideBarCollapsed ? '星岚' : '星岚酒店管理系统';
 
         if (!currentSideBarMenuNode) currentSideBarMenuNode = {};
         return (
-            <div className="frame-side-bar" style={{width: sideBarWidth, display: showSideBar ? 'block' : 'none'}}>
+            <div className="frame-side-bar" style={{width: sideBarCurrentWidth, display: showSideBar ? 'block' : 'none'}}>
                 <div className="logo">
                     <Link to="/">
                         {logo}
@@ -82,28 +96,55 @@ class LayoutComponent extends Component {
                         <FontIcon type="fa-bars"/>
                     </div>
                 </div>
-                <div className="menu-outer" style={{overflow: outerOverFlow}}>
-                    <div className="menu-inner" style={{width: innerWidth, overflowY: innerOverFlow}}>
-                        <Menu
-                            style={{display: sideBarCollapsed ? 'none' : 'block'}}
-                            mode={mode}
-                            selectedKeys={[currentSideBarMenuNode.key]}
-                            openKeys={menuOpenKeys}
-                            onOpenChange={this.handleOpenChange}
-                        >
-                            {this.renderMenus()}
-                        </Menu>
-                        <Menu
-                            style={{display: !sideBarCollapsed ? 'none' : 'block'}}
-                            mode={mode}
-                            selectedKeys={[currentSideBarMenuNode.key]}
-                        >
-                            {this.renderMenus()}
-                        </Menu>
+                <Rnd
+                    default={{
+                        x: 0,
+                        y: 0,
+                        height: windowHeight - headerHeight,
+                        width: sideBarCurrentWidth,
+                    }}
+                    // style={{transition: 'width 300ms'}}
+                    disableDragging
+                    enableResizing={{
+                        bottom: false,
+                        bottomLeft: false,
+                        bottomRight: false,
+                        left: false,
+                        right: true,
+                        top: false,
+                        topLeft: false,
+                        topRight: false,
+                    }}
+                    onResize={(event, direction, refToElement) => {
+                        if (!sideBarCollapsed) {
+                            const newSideBarWidth = parseInt(refToElement.style.width, 10);
+                            this.props.actions.setSideBarWidth(newSideBarWidth);
+                        }
+                    }}
+                >
+                    <div className="menu-outer" style={{overflow: outerOverFlow, top: 0}}>
+                        <div className="menu-inner" style={{width: innerWidth, overflowY: innerOverFlow}}>
+                            <Menu
+                                style={{display: sideBarCollapsed ? 'none' : 'block'}}
+                                mode={mode}
+                                selectedKeys={[currentSideBarMenuNode.key]}
+                                openKeys={menuOpenKeys}
+                                onOpenChange={this.handleOpenChange}
+                            >
+                                {this.renderMenus()}
+                            </Menu>
+                            <Menu
+                                style={{display: !sideBarCollapsed ? 'none' : 'block'}}
+                                mode={mode}
+                                selectedKeys={[currentSideBarMenuNode.key]}
+                            >
+                                {this.renderMenus()}
+                            </Menu>
+                        </div>
                     </div>
-                </div>
-
+                </Rnd>
             </div>
+
         );
     }
 }

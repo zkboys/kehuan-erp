@@ -1,25 +1,27 @@
 @import "../../variables";
 
-.login {
+.root {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background: url('./login-bg.jpg');
   background-size: cover;
-  .login-box {
+  // https://github.com/webpack-contrib/css-loader/issues/167
+  // TODO: background: url(./login-bg.jpg); // 这么写报错，但是下面这么写就可以了，这个是特么bug？
+  background: url(../login/login-bg.jpg);
+  .box {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 300px;
-    padding: 16px;
+    width: 400px;
+    padding: 50px;
     border-radius: 5px;
     border: 1px solid @borderColor;
     background: #fff;
   }
-  h1 {
+  h1, h3 {
     padding-bottom: 16px;
     text-align: center;
   }

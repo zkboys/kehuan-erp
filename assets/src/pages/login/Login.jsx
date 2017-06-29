@@ -1,19 +1,15 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
-import {Form, Input, Icon, Button} from 'antd';
-import {isDev} from 'zk-react';
-import * as promiseAjax from 'zk-react/utils/promise-ajax';
-import {init as initStorage} from 'zk-react/utils/storage';
-import {convertToTree} from 'zk-react/utils/tree-utils';
+import * as promiseAjax from 'zk-tookit/utils/promise-ajax';
+import {init as initStorage} from 'zk-tookit/utils/storage';
+import {convertToTree} from 'zk-tookit/utils/tree-utils';
 import {setCurrentLoginUser, setMenuTreeData, isMock, getAjaxBaseUrl} from '../../commons';
 import './style.less';
+import LoginForm from '../components/LoginForm';
+import PasswordForm from '../components/PasswordForm';
 
-const FormItem = Form.Item;
-function hasErrors(fieldsError) {
-    return Object.keys(fieldsError).some(field => fieldsError[field]);
-}
 
-if (isDev) {
+if (process.env.NODE_ENV === 'development') {
     require('../../mock/index');
 
     console.log('current mode is debug, mock is started');
@@ -26,107 +22,108 @@ promiseAjax.init({
     isMock,
 });
 
-@Form.create()
 class Login extends Component {
     state = {
         loading: false,
         errorMessage: '',
-    }
+        showPasswordForm: false,
+        currentLoginUser: {},
+    };
 
-    componentDidMount() {
-        // To disabled submit button at the beginning.
-        this.props.form.validateFields();
-    }
+    handleLoginSubmit = ({userName, password}) => {
+        this.setState({loading: true, errorMessage: ''});
+        promiseAjax.post('signin', {userName, password}, {errorTip: false}).then(res => {
+            console.log(res);
+            const user = res.user;
+            const menus = res.menus;
+            const ref = res.ref;
+            const {
+                is_first_login: isFirstLogin,
+                id,
+                name,
+                loginName,
+            } = user;
+            const permissions = menus.map(item => {
+                if (item.type === '0') return item.key;
+                if (item.type === '1') return item.code;
+                return null;
+            });
+            const currentLoginUser = {
+                id,
+                name,
+                loginName,
+                permissions,
+            };
+            this.setState({currentLoginUser});
+            initStorage({
+                keyPrefix: currentLoginUser.id,
+            });
 
-    handleSubmit = (e) => {
-        e.preventDefault();
-        if (this.state.loading) {
-            return;
-        }
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                console.log('Received values of form: ', values);
-                const {userName, password} = values;
-                this.setState({loading: true, errorMessage: ''});
-                // TODO 修改url，考虑着两个请求是否可以合并为一个？
-                promiseAjax.post('/signin', {userName, password}, {errorTip: false}).then(res => {
-                    const user = res.user;
-                    const currentLoginUser = {
-                        id: user._id,
-                        name: user.name,
-                        loginName: user.loginName,
-                    };
-                    initStorage({
-                        keyPrefix: currentLoginUser.id,
-                    });
-                    promiseAjax.get('/mock/system/menus', null, {errorTip: false}).then(response => {
-                        const menuTreeData = convertToTree(response);
-                        setMenuTreeData(menuTreeData);
-                        setCurrentLoginUser(currentLoginUser);
-                        window.location.href = '/';
-                    }).finally(() => {
-                        this.setState({loading: false});
-                    });
-                }).catch(error => {
-                    console.log(error);
-                    const errorMessage = error.response && error.response.data && error.response.data.message;
-                    this.setState({loading: false, errorMessage});
-                });
+            if (isFirstLogin) {
+                this.setState({menus, password, loading: false, showPasswordForm: true});
+            } else {
+                this.toHome(menus, ref);
             }
+        }).catch(error => {
+            const message = this.getAjaxErrorMessage(error);
+            this.setState({loading: false, errorMessage: message});
         });
+    };
+
+    handlePassSubmit = (values) => {
+        const {password: oldPass} = this.state;
+        values.oldPass = oldPass;
+        promiseAjax.put('/system/pass', values).then(() => {
+            const {menus} = this.state;
+            this.toHome(menus);
+        }).catch(error => {
+            const message = this.getAjaxErrorMessage(error);
+            this.setState({loading: false, errorMessage: message});
+        });
+    };
+
+    getAjaxErrorMessage(error) {
+        const message = error && error.response && error.response.data && error.response.data.message;
+        return message || '未知错误';
     }
+
+    toHome = (menuData, ref = '/') => {
+        menuData = menuData.filter(item => item.key);
+        const {currentLoginUser} = this.state;
+        const menus = menuData.filter(item => item.type === '0');
+        const menuTreeData = convertToTree(menus);
+        setMenuTreeData(menuTreeData);
+        setCurrentLoginUser(currentLoginUser);
+        window.location.href = ref;
+    };
 
     render() {
-        const {loading, errorMessage} = this.state;
-        const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
-
-        // Only show error after a field is touched.
-        const userNameError = isFieldTouched('userName') && getFieldError('userName');
-        const passwordError = isFieldTouched('password') && getFieldError('password');
-        // 账号/密码：test/111111
+        const {loading, errorMessage, showPasswordForm} = this.state;
         return (
-            <div className="login">
-                <div className="login-box">
-                    <h1>用户登录</h1>
-                    <Form onSubmit={this.handleSubmit}>
-                        <FormItem
-                            validateStatus={userNameError ? 'error' : ''}
-                            help={userNameError || ''}
-                        >
-                            {getFieldDecorator('userName', {
-                                rules: [{required: true, message: '请输入用户名！'}],
-                            })(
-                                <Input prefix={<Icon type="user" style={{fontSize: 13}}/>} placeholder="用户名"/>
-                            )}
-                        </FormItem>
-                        <FormItem
-                            validateStatus={passwordError ? 'error' : ''}
-                            help={passwordError || ''}
-                        >
-                            {getFieldDecorator('password', {
-                                rules: [{required: true, message: '请输入密码！'}],
-                            })(
-                                <Input prefix={<Icon type="lock" style={{fontSize: 13}}/>} type="password" placeholder="密码"/>
-                            )}
-                        </FormItem>
-                        <FormItem
-                            style={{marginBottom: 8}}
-                        >
-                            <Button
-                                style={{width: '100%'}}
+            <div styleName="root">
+                {
+                    showPasswordForm ?
+                        <div styleName="box">
+                            <h1>修改密码</h1>
+                            <h3>您为首次登录，需要修改密码</h3>
+                            <PasswordForm
+                                hideOldPass
                                 loading={loading}
-                                type="primary"
-                                htmlType="submit"
-                                disabled={hasErrors(getFieldsError())}
-                            >
-                                登录
-                            </Button>
-                        </FormItem>
-                    </Form>
-                    <div className="error-message">
-                        {errorMessage}
-                    </div>
-                </div>
+                                onSubmit={this.handlePassSubmit}
+                            />
+                            <div styleName="error-message">
+                                {errorMessage}
+                            </div>
+                        </div>
+                        :
+                        <div styleName="box">
+                            <h1>用户登录</h1>
+                            <LoginForm loading={loading} onSubmit={this.handleLoginSubmit}/>
+                            <div styleName="error-message">
+                                {errorMessage}
+                            </div>
+                        </div>
+                }
             </div>
         );
     }

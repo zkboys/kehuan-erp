@@ -8,6 +8,11 @@ zk-react 管理系统模板，UI基于antd，完整的登录、退出登录、�
 1. [es6](http://es6.ruanyifeng.com/) 重点：2、3、7、8、9、14、19、20、22
 1. [react](https://facebook.github.io/react/) state props 周期函数 jsx
 1. [UI antd](https://ant.design/index-cn)
+1. 时间处理：[moment](http://momentjs.com/)
+1. js工具：[lodash](https://lodash.com/)
+1. 构建：[webpack](https://doc.webpack-china.org/)
+1. cssModule：[css-module](https://github.com/gajus/react-css-modules)
+1. 数据管理：[redux](http://redux.js.org/)
 
 ### 需要安装的软件
 1. [nodejs](http://nodejs.cn/)
@@ -16,7 +21,7 @@ zk-react 管理系统模板，UI基于antd，完整的登录、退出登录、�
 1. [git](https://git-scm.com/)
 
 ## Build Setup
-> 使用[yarn](https://yarnpkg.com/zh-Hans/)
+> 使用[yarn]_`**_`(https://yarnpkg.com/zh-Hans/)`_**`_
 
 ``` bash
 # install dependencies
@@ -156,6 +161,27 @@ server {
 - [x] 登录之后，获取菜单数据，并存入session中，由于页面头部是由菜单生成的，如果菜单是异步获取的，将会存在各种问题，所以进入系统时候保证菜单可用
 - [x] 构建优化：css postcss的使用，自动添加前缀等功能
 - [x] 是否使用 css module功能，好像加不上，antd不是module方式，如果使用module，antd less 构建会失败。 通过配置可以区分出那些模块使用css module，那些不使用。
+- [x] 添加事件，移除事件的高阶组件
+- [x] redux 中数据，实现部分数据同步到localStorage中，目前是可以选择性恢复，可以满足需求
+- [x] source-map改如何使用
+- [x] 左侧菜单可拖动缩放宽度
+- [x] zk-react 开发模式构建慢问题，升级到webpack2.0，添加了一些优化
+- [x] antd 通用校验规则整理到zk-react中
+- [ ] 字体图标，团队有条件还是定制的好，全部引入会多出300~400KB。
 - [ ] 修改less时可以hot reload ，修改jsx为什么直接reload？
 - [ ] antd 图标本地部署问题：缓存问题，antd.less需要全部引入，会多550KB的css代码
-- [ ] 字体图片，团队有条件还是定制的好，全部引入会多出300~400KB。
+- [ ] docker 前端生产环境部署
+- [ ] antd 自定义异步校验，多个异步校验互相干扰问题
+- [ ] antd edit-cell其他表单元素完善、 可配置form组件（可用于查询条件、简单的form）
+- [ ] 菜单匹配时，如果path携带参数，怎么能匹配成功？
+- [ ] css module class name 长短问题
+- [ ] css module=true background: url(); 问题 Module not found: Error: Can't resolve 'login-bg.jpg'
+
+## 脚手架步骤
+1. git clone zk-react-template-management object-name
+2. cd object-name
+3. rm -rf .git
+4. change local-default to local
+5. rm -rf local-default
+6. yarn
+

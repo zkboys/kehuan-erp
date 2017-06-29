@@ -2,15 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux';
 import {message} from 'antd';
-import {isDev, promiseAjax} from 'zk-react';
-import {init as initStorage} from 'zk-react/utils/storage';
+import * as promiseAjax from 'zk-tookit/utils/promise-ajax';
+import {init as initStorage} from 'zk-tookit/utils/storage';
 import './global.less';
-import {configureStore} from './redux';
+import configureStore from './redux/store/configure-store';
 import Router from './route/Router';
 import handleErrorMessage from './commons/handle-error-message';
 import {getCurrentLoginUser, getAjaxBaseUrl, isMock} from './commons';
 
-if (isDev) {
+if (process.env.NODE_ENV === 'development') {
     require('./mock/index');
 
     console.log('current mode is debug, mock is started');
@@ -26,9 +26,7 @@ promiseAjax.init({
         instance.defaults.baseURL = getAjaxBaseUrl();
     },
     onShowErrorTip: (err, errorTip) => {
-        if (errorTip !== false) {
-            handleErrorMessage(err);
-        }
+        handleErrorMessage(err, errorTip);
     },
     onShowSuccessTip: (response, successTip) => {
         if (successTip !== false) {

@@ -6,7 +6,7 @@ const OrganizationSchema = new Schema({
     parentKey: {type: String},
     name: {type: String},
     description: {type: String},
-    remark: {type: String},
+    order: {type: Number},
 });
 OrganizationSchema.index({key: 1}, {unique: true});
 OrganizationSchema.pre('save', function (next) {

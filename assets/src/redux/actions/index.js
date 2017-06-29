@@ -1,29 +1,14 @@
-import * as utils from './utils';
-import * as page from './page';
-import * as demo from './demo';
+import {checkAction, actionUtils, actionPage} from 'zk-tookit/redux';
+import pageInitState from '../../page-init-state';
 import * as frame from './frame';
 
+const syncKeys = ['settings', 'frame']; // 需要同步的数据，对应meta中的sync字段，对应的是reducers中的数据
+const utils = actionUtils({pageInitState, syncKeys});
+
 const actions = {
-    page,
+    actionPage,
     utils,
-    demo,
     frame,
 };
 
-const actionsFunctions = {};
-function checkActions(acs) {
-    for (let key of Object.keys(acs)) {
-        const action = acs[key];
-        for (let k of Object.keys(action)) {
-            if (actionsFunctions[k]) {
-                throw Error(`不予许定义同名的action方法：${key}.${k} 与 ${actionsFunctions[k]._module}.${k} 方法冲突！`);
-            } else {
-                actionsFunctions[k] = action[k];
-                actionsFunctions[k]._module = key;
-            }
-        }
-    }
-}
-
-checkActions(actions);
-export default actionsFunctions;
+export default checkAction(actions);

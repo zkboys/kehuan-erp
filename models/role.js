@@ -5,6 +5,7 @@ const RoleSchema = new Schema({
     name: {type: String},
     permissions: {type: Array},
     description: {type: String},
+    status: {type: String},
 });
 
 RoleSchema.pre('save', function (next) {

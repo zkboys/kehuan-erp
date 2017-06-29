@@ -6,10 +6,15 @@ exports.getRoleById = async function (roleId) {
     return await RoleProxy.getRoleById(roleId);
 };
 
+exports.getAllRoles = async function () {
+    return await RoleProxy.getRolesByQuery({});
+};
+
+
 exports.getRolesByPage = async function (currentPage = 1, pageSize = 10, queries = []) {
     const roles = await RoleProxy.getRolesByPage(currentPage, pageSize, queries);
     const totalCount = await RoleProxy.getRolesCountByQuery(queries);
-    return {roles, totalCount}
+    return {roles, totalCount};
 };
 exports.getRoleByNameFromAllRoles = async function (roleName) {
     return await RoleProxy.getRoleByNameFromAllRoles(roleName);

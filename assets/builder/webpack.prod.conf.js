@@ -44,7 +44,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             },
             {
                 test: /\.less$/,
-                exclude: path.resolve(__dirname, '../', 'src/pages/examples/cssModule'),
+                exclude: config.useCSSModulePath,
                 loader: extractCSS.extract({
                     fallback: 'style-loader',
                     use: [
@@ -62,7 +62,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             },
             {
                 test: /\.less/,
-                include: path.resolve(__dirname, '../', 'src/pages/examples/cssModule'),
+                include: config.useCSSModulePath,
                 loader: extractCSSModule.extract({
                     fallback: 'style-loader',
                     use: [
@@ -130,7 +130,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             favicon: './favicon.png',
             filename: 'index.html',
             template: './index.html',
-            title: '科环集成墙板有限公司',
+            title: '酒店管理系统',
             inject: true,
             minify: {
                 removeComments: true,

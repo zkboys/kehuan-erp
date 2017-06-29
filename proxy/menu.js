@@ -30,5 +30,21 @@ exports.getMenusByUser = function (user) {
     } else {
         return MenuModel.find({'key': {'$in': user.permissions}}).lean();
     }
-
 };
+
+exports.addMenu = function (menu) {
+    return new MenuModel(menu).save();
+};
+
+exports.updateMenu = function (menu) {
+    menu.update_at = new Date();
+    return MenuModel.findOneAndUpdate({key: menu.key}, menu).lean();
+};
+
+exports.deleteMenuByKey = function (key) {
+    return MenuModel.remove({key}).lean();
+};
+exports.deleteMenuByKeys = function (keys) {
+    return MenuModel.remove({key: {'$in': keys}}).lean();
+};
+

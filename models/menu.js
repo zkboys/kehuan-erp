@@ -9,9 +9,10 @@ const MenuSchema = new Schema({
     icon: {type: String},
     text: {type: String},
     path: {type: String},
-    functions: {type: Array},
+    code: {type: String},
+    type: {type: String}, // '0' 菜单 '1' 功能
 });
-MenuSchema.index({key: 1}, {unique: true});
+
 MenuSchema.pre('save', function (next) {
     this.update_at = new Date();
     next();

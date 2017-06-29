@@ -5,12 +5,22 @@
     "transform-class-properties",
     [
       "import",
-      [
-        {
-          "libraryName": "antd",
-          "style": "css"
+      {
+        "libraryName": "antd",
+        "style": "css"
+      }
+    ],
+    [
+      "react-css-modules",
+      {
+        "generateScopedName": "[path][name]-[local]",
+        "webpackHotModuleReloading": true,
+        "filetypes": {
+          ".less": {
+            "syntax": "postcss-less"
+          }
         }
-      ]
+      }
     ]
   ],
   "presets": [

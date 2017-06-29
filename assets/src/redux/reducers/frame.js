@@ -1,9 +1,9 @@
 import {handleActions} from 'redux-actions';
-import {handleAsyncReducer} from 'zk-react';
-import {convertToTree, getNodeByPropertyAndValue, getTopNodeByNode} from 'zk-react/utils/tree-utils';
-import {uniqueArray} from 'zk-react/utils';
-import {session} from 'zk-react/utils/storage';
-import * as types from '../actionTypes';
+import {handleAsyncReducer, actionTypes as systemTypes} from 'zk-tookit/redux';
+import {convertToTree, getNodeByPropertyAndValue, getTopNodeByNode} from 'zk-tookit/utils/tree-utils';
+import {uniqueArray} from 'zk-tookit/utils';
+import {session} from 'zk-tookit/utils/storage';
+import * as types from '../action-types';
 
 let initialState = {
     menuTreeData: [],
@@ -16,9 +16,39 @@ let initialState = {
     pageTitle: '',
     showPageHeader: true,
     showSideBar: true,
+    sideBarMinWidth: 60,
+    sideBarWidth: 200,
+    fullPageLoading: false,
 };
 
 export default handleActions({
+    [types.SHOW_FULL_PAGE_LOADING](state) {
+        return {
+            ...state,
+            fullPageLoading: true,
+        };
+    },
+    [types.HIDE_FULL_PAGE_LOADING](state) {
+        return {
+            ...state,
+            fullPageLoading: false,
+        };
+    },
+    [systemTypes.GET_STATE_FROM_STORAGE](state, action) {
+        const {payload = {}} = action;
+        const {frame} = payload;
+        if (frame) {
+            const {sideBarWidth = 200, sideBarCollapsed = false} = frame;
+            return {
+                ...state,
+                sideBarWidth,
+                sideBarCollapsed,
+            };
+        }
+        return {
+            ...state,
+        };
+    },
     [types.GET_SYSTEM_MENUS]: handleAsyncReducer({
         always(state, /* action */) {
             return state;
@@ -31,7 +61,8 @@ export default handleActions({
             let menuTreeData = state.menuTreeData;
 
             if (payload && payload.length) {
-                menuTreeData = convertToTree(payload);
+                const menus = payload.filter(item => item.type === '0');
+                menuTreeData = convertToTree(menus);
             }
             session.setItem('menuTreeData', menuTreeData);
 
@@ -64,6 +95,10 @@ export default handleActions({
             // TODO: 如果path=/user/:id,这种 通过pathname无法匹配到菜单
             currentSideBarMenuNode = getNodeByPropertyAndValue(menuTreeData, 'path', path);
 
+            // 顶级节点有可能设置了某个子节点的path，会导致定位到顶级，而不是具体的菜单节点
+            if (currentSideBarMenuNode && !currentSideBarMenuNode.parentKey) {
+                currentSideBarMenuNode = getNodeByPropertyAndValue(currentSideBarMenuNode.children, 'path', path);
+            }
             if (currentSideBarMenuNode) {
                 pageTitle = currentSideBarMenuNode.text;
                 const parentNodes = currentSideBarMenuNode.parentNodes;
@@ -148,6 +183,13 @@ export default handleActions({
         return {
             ...state,
             showSideBar: false,
+        };
+    },
+    [types.SET_SIDE_BAR_WIDTH](state, action) {
+        let sideBarWidth = action.payload;
+        return {
+            ...state,
+            sideBarWidth,
         };
     },
 }, initialState);

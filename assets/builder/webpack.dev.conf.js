@@ -27,7 +27,7 @@ module.exports = merge(baseWebpackConfig, {
             },
             {
                 test: /\.less/,
-                exclude: path.resolve(__dirname, '../', 'src/pages/examples/cssModule'),
+                exclude: config.useCSSModulePath,
                 use: [
                     'style-loader',
                     'css-loader',
@@ -43,7 +43,7 @@ module.exports = merge(baseWebpackConfig, {
             },
             {
                 test: /\.less/,
-                include: path.resolve(__dirname, '../', 'src/pages/examples/cssModule'),
+                include: config.useCSSModulePath,
                 use: [
                     'style-loader',
                     {
@@ -67,6 +67,7 @@ module.exports = merge(baseWebpackConfig, {
             },
         ],
     },
+    devtool: 'eval-source-map',
     plugins: [
         // 只在开发模式下使用
         // webpack2会忽略未使用的export，打包文件更小
@@ -74,10 +75,10 @@ module.exports = merge(baseWebpackConfig, {
         // 这个项目会相差1.7M
         new webpack.DllReferencePlugin({
             context: '.',
-            manifest: require(path.join(__dirname, '../', 'public', 'vendor-manifest.json')),
+            manifest: require(path.join(__dirname, '../', 'dist', 'vendor-manifest.json')),
         }),
         new AddAssetHtmlPlugin({
-            filepath: path.join(__dirname, '../', 'public', 'vendor.dll.js'),
+            filepath: path.join(__dirname, '../', 'dist', 'vendor.dll.js'),
             includeSourcemap: false,
             hash: true,
         }),
@@ -88,7 +89,7 @@ module.exports = merge(baseWebpackConfig, {
             favicon: './favicon.png',
             filename: 'index.html',
             template: './index.html',
-            title: '科环集成墙板有限公司',
+            title: '酒店管理系统',
             inject: true,
         }),
         new HtmlWebpackPlugin({

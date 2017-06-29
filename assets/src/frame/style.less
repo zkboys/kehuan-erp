@@ -5,14 +5,10 @@
   z-index: 999;
   top: 0;
   right: 0;
-  left: @sideBarMaxWidth;
   height: @headerHeight;
   background-color: @primaryColor;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  transition: .3s;
-  &.side-bar-collapsed {
-    left: @sideBarMinWidth;
-  }
+  //transition: .3s;
   &.side-bar-hidden {
     left: 0;
   }
@@ -60,6 +56,29 @@
       border-radius: 50%;
       text-align: center;
     }
+
+    /* 选择域样式 */
+    .right-menu-item:hover {
+      .ant-select-selection--single,
+      .ant-select-selection__rendered {
+        background: none;
+      }
+    }
+    .ant-select-selection--single {
+      height: 56px;
+      background: @primaryColor;
+      border: none;
+      box-shadow: none;
+      transition: all 0ms;
+      .ant-select-selection__rendered {
+        background: @primaryColor;
+        color: #fff;
+        line-height: 56px;
+      }
+      .ant-select-arrow {
+        color: #fff;
+      }
+    }
   }
   .ant-menu-horizontal {
     padding-top: 6px;
@@ -91,7 +110,7 @@
   bottom: 0;
   left: 0;
   background: #fff;
-  transition: .3s;
+  //transition: .3s;
   .logo {
     height: @headerHeight;
     line-height: @headerHeight;
@@ -139,11 +158,11 @@
     position: relative;
     height: 100%;
     overflow-x: visible;
-    transition: .3s;
+    //transition: .3s;
   }
   .side-bar-top-menu-text {
     display: none;
-    transition: .3s;
+    //transition: .3s;
   }
   .ant-menu-item-active {
     overflow: visible !important;
@@ -157,12 +176,17 @@
       background-color: #ecf6fd;
     }
   }
+  .ant-menu-vertical {
+    .ant-menu-item {
+      transition: all 0ms;
+    }
+  }
 }
 
 .frame-content {
   padding-top: 106px;
   padding-left: @sideBarMaxWidth;
-  transition: .3s;
+  //transition: .3s;
   &.frame-content-iframe {
     position: absolute;
     top: 0;
@@ -175,7 +199,6 @@
 .page-header {
   position: fixed;
   top: @headerHeight;
-  left: @sideBarMaxWidth;
   right: 0;
   z-index: 998;
   background: #fff;
@@ -183,10 +206,7 @@
   line-height: 50px;
   border-bottom: 1px solid @borderColor;
   padding: 0 16px;
-  transition: .3s;
-  &.side-bar-collapsed {
-    left: @sideBarMinWidth;
-  }
+  //transition: .3s;
   &.side-bar-hidden {
     left: 0;
   }

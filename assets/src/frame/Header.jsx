@@ -2,12 +2,13 @@ import React, {Component} from 'react';
 import {Menu, Popconfirm, Popover, Badge} from 'antd';
 import {Link} from 'react-router';
 import classNames from 'classnames';
-import {ajax} from 'zk-react';
-import {FontIcon, UserAvatar} from 'zk-react/antd';
-import {getFirstValue} from 'zk-react/utils/tree-utils';
-import {session} from 'zk-react/utils/storage';
+import {ajax} from 'zk-tookit/react';
+import {FontIcon, UserAvatar} from 'zk-tookit/antd';
+import {getFirstValue} from 'zk-tookit/utils/tree-utils';
+import {session} from 'zk-tookit/utils/storage';
 import {toLogin, getCurrentLoginUser} from '../commons';
-import connectComponent from '../redux/store/connectComponent';
+import connectComponent from '../redux/store/connect-component';
+import DomainSelect from '../pages/components/DomainSelect.jsx';
 
 @ajax()
 class LayoutComponent extends Component {
@@ -40,6 +41,7 @@ class LayoutComponent extends Component {
             const path = getFirstValue(menuTreeData, node, 'path');
             const icon = node.icon;
             const text = node.text;
+            if (text === '系统') return null;
             return (
                 <Menu.Item key={key}>
                     <Link to={path}>
@@ -64,11 +66,16 @@ class LayoutComponent extends Component {
     }
 
     render() {
-        const {currentTopMenuNode = {}, sideBarCollapsed, showSideBar} = this.props;
+        const {currentTopMenuNode = {}, sideBarCollapsed, showSideBar, sideBarMinWidth, sideBarWidth} = this.props;
         const frameHeaderClass = classNames({
             'side-bar-collapsed': sideBarCollapsed,
             'side-bar-hidden': !showSideBar,
         });
+        const style = {
+            left: sideBarCollapsed ? sideBarMinWidth : sideBarWidth,
+        };
+
+        if (!showSideBar) style.left = 0;
 
         const user = getCurrentLoginUser() ||
             {
@@ -76,9 +83,11 @@ class LayoutComponent extends Component {
                 loginName: 'no name',
                 avatar: '',
             };
+        const showNotice = false;
+        const showDomainSelect = false; // TODO: 根据user，判断是否需要显示切换域的功能
         return (
-            <div className={`frame-header ${frameHeaderClass}`}>
-                <div className={`left-menu ${frameHeaderClass}`}>
+            <div className={`frame-header ${frameHeaderClass}`} style={style}>
+                <div className={`left-menu ${frameHeaderClass}`} style={style}>
                     <Menu
                         selectedKeys={[currentTopMenuNode.key]}
                         mode="horizontal"
@@ -87,20 +96,35 @@ class LayoutComponent extends Component {
                     </Menu>
                 </div>
                 <div className="right-menu">
-                    <Popover
-                        content={this.renderNoticeContent()}
-                    >
+                    {
+                        showNotice ? // 暂时先不显示，有需求再加
+                            <Popover
+                                content={this.renderNoticeContent()}
+                            >
+                                <div className="right-menu-item">
+                                    <Badge count={100}>
+                                        <FontIcon type="message"/>
+                                        <span className="notice-label">通知</span>
+                                    </Badge>
+                                </div>
+                            </Popover>
+                            : null
+                    }
+                    <Link to="/system/profile">
                         <div className="right-menu-item">
-                            <Badge count={100}>
-                                <FontIcon type="message"/>
-                                <span className="notice-label">通知</span>
-                            </Badge>
+                            <UserAvatar user={user}/>
+                            <span>{user.name}</span>
                         </div>
-                    </Popover>
-                    <div className="right-menu-item">
-                        <UserAvatar user={user}/>
-                        <span>{user.name}</span>
-                    </div>
+                    </Link>
+                    {
+                        showDomainSelect ?
+                            <div className="right-menu-item">
+                                <DomainSelect
+                                    style={{width: 150}}
+                                />
+                            </div>
+                            : null
+                    }
                     <Popconfirm
                         onVisibleChange={this.handleLogoutPopVisibleChange}
                         placement="bottomRight"

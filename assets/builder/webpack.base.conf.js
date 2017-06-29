@@ -12,15 +12,13 @@ module.exports = {
     resolve: {
         extensions: ['.webpack-loader.js', '.web-loader.js', '.loader.js', '.js', '.jsx'],
         modules: [path.resolve(__dirname, '../', 'node_modules'), sourcePath],
-        alias: {
-            src: '../src',
-        },
+        alias: {},
     },
     module: {
         rules: [
             {
                 test: /\.(js|jsx)$/,
-                exclude: /node_modules[\\/](?!(zk-react)[\\/]).*/, // zk-react需要webpack构建 exclude: /node_modules\/(?!(MY-MODULE|ANOTHER-ONE)\/).*/,
+                exclude: /node_modules[\\/](?!(zk-tookit)[\\/]).*/, // zk-tookit需要webpack构建 exclude: /node_modules\/(?!(MY-MODULE|ANOTHER-ONE)\/).*/,
                 enforce: "pre",
                 loader: "eslint-loader",
                 options: {
@@ -29,7 +27,7 @@ module.exports = {
             },
             {
                 test: /\.(js|jsx)$/,
-                exclude: /node_modules[\\/](?!(zk-react)[\\/]).*/, // zk-react需要webpack构建 exclude: /node_modules\/(?!(MY-MODULE|ANOTHER-ONE)\/).*/,
+                exclude: /node_modules[\\/](?!(zk-tookit)[\\/]).*/, // zk-tookit需要webpack构建 exclude: /node_modules\/(?!(MY-MODULE|ANOTHER-ONE)\/).*/,
                 loader: ['happypack/loader'],
             },
             {

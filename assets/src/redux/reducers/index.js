@@ -1,10 +1,11 @@
-import pageState from './page';
-import demo from './demo';
+import {reducerPage} from 'zk-tookit/redux';
+import initialState from '../../page-init-state';
 import frame from './frame';
+
+const pageState = reducerPage(initialState);
 
 const reducers = {
     pageState,
-    demo,
     frame,
 };
 

@@ -1,6 +1,16 @@
 import {getUsersByPageSize} from './mockdata/user';
 
 export default function (mock) {
+    mock.onGet('/mock/user').reply(() => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve([200, {
+                    loginName: 'zhangsan',
+                    name: '张三',
+                }]);
+            }, 1000);
+        });
+    });
     mock.onGet('/mock/users').reply((config) => {
         const {
             pageSize,

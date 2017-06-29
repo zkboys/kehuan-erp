@@ -1,5 +1,5 @@
 exports.errorMessages = {
-    loginNameCanNotBeNull: [1000, '用户名不能为空'],
+    loginNameCanNotBeNull: [1000, '登录名不能为空'],
     loginNameLengthInvalid: [1001, '登录名至少需要2个字符'],
     loginNameInvalid: [1002, '登录名不合法'],
     loginNameIsUsed: [1003, '登录名已被使用'],

@@ -30,8 +30,15 @@ exports.getByPage = controllerDecorator(async function (req, res, next) {
     });
 });
 
+
+exports.getAllRoles = controllerDecorator(async function (req, res, next) {
+    const roles = await RoleService.getAllRoles();
+    res.send(roles);
+});
+
+
 exports.delete = controllerDecorator(async function (req, res, next) {
-    const roleId = req.body.id;
+    const roleId = req.params.id;
     await RoleService.deleteRoleById(roleId);
     res.sendSuccess();
 });
