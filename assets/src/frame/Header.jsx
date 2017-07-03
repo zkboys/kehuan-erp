@@ -30,6 +30,7 @@ class LayoutComponent extends Component {
     handleLogout = () => {
         this.props.$ajax.post('/signout').then(() => {
             session.clear();
+            window.sessionStorage.clear();
             toLogin();
         });
     }
