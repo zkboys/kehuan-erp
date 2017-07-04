@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
+const SchemaModel = new Schema({
     name: {type: String},
     loginName: {type: String},
     pass: {type: String},
@@ -17,15 +17,6 @@ const UserSchema = new Schema({
     is_locked: {type: Boolean, default: false},
 });
 
-UserSchema.virtual('avatar_url').get(function () {
-    return this.avatar;
-});
+SchemaModel.index({loginName: 1}, {unique: true});
 
-UserSchema.index({loginName: 1}, {unique: true});
-
-UserSchema.pre('save', function (next) {
-    this.update_at = new Date();
-    next();
-});
-
-mongoose.model('User', UserSchema);
+module.exports = mongoose.model('User', SchemaModel);

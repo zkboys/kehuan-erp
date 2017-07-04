@@ -1,0 +1,12 @@
+common
+controller
+coverage
+logs
+middlewares
+models
+properties
+proxy
+public
+routes
+service
+test

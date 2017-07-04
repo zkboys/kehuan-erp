@@ -21,6 +21,7 @@ export default class DomainSelect extends Component {
         return (
             <Select
                 allowClear
+                placeholder="请选择角色"
                 {...this.props}
             >
                 {

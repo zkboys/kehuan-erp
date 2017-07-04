@@ -9,6 +9,7 @@ const menu = require('../controller/menu');
 const organization = require('../controller/organization');
 const user = require('../controller/user');
 const role = require('../controller/role');
+const material = require('../controller/material');
 
 router.get('/', userRequired, function (req, res) {
     res.render('index');
@@ -60,6 +61,9 @@ router.get('/api/system/roles/name/:name', userRequired, role.getByRoleNameFromA
 router.post('/api/system/roles', userRequired, permission('ROLE_ADD'), role.addAndSave);
 router.put('/api/system/roles', userRequired, permission('ROLE_UPDATE'), role.update);
 router.delete('/api/system/roles/:id', userRequired, permission('ROLE_DELETE'), role.delete);
+
+router.get('/api/materials', userRequired, material.getByPage);
+
 
 router.get('*', userRequired, function (req, res, next) {
     //  根据约定 区分不同得请求类型，返回不同的数据。

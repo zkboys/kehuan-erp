@@ -11,6 +11,11 @@ module.exports = function (schema) {
         update_at: {type: Date, default: Date.now},
     });
 
+    schema.pre('save', function (next) {
+        this.update_at = new Date();
+        next();
+    });
+
     schema.methods.create_at_ago = function () {
         return tools.formatDate(this.create_at, true);
     };
