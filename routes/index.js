@@ -63,6 +63,10 @@ router.put('/api/system/roles', userRequired, permission('ROLE_UPDATE'), role.up
 router.delete('/api/system/roles/:id', userRequired, permission('ROLE_DELETE'), role.delete);
 
 router.get('/api/materials', userRequired, material.getByPage);
+router.get('/api/materials/:id', userRequired, material.getById);
+router.post('/api/materials', userRequired, material.add);
+router.put('/api/materials', userRequired, material.update);
+router.delete('/api/materials/:id', userRequired, material.deleteById);
 
 
 router.get('*', userRequired, function (req, res, next) {

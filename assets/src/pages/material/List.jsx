@@ -17,7 +17,7 @@ export default class extends Component {
                 type: 'input',
                 field: 'name',
                 label: '原料名称',
-                labelSpaceCount: 3,
+                labelSpaceCount: 4,
                 width: 200,
                 placeholder: '请输入原料名称',
             },
@@ -28,15 +28,19 @@ export default class extends Component {
         {
             type: 'primary',
             text: '添加',
-            permission: 'ROLE_ADD',
+            permission: 'MATERIAL_ADD',
             onClick: () => {
-                this.props.router.push('/system/role/+edit/:id');
+                this.props.router.push('/materials/+edit/:id');
             },
         },
     ];
 
     columns = [
-        {title: '明后才能', dataIndex: 'name', key: 'name'},
+        {title: '名称', dataIndex: 'name', key: 'name'},
+        {title: '规格', dataIndex: 'spec', key: 'spec'},
+        {title: '单位', dataIndex: 'unit', key: 'unit'},
+        {title: '单价', dataIndex: 'unitPrice', key: 'unitPrice'},
+        {title: '备注', dataIndex: 'remark', key: 'remark'},
         {
             title: '操作',
             key: 'operator',
@@ -46,18 +50,18 @@ export default class extends Component {
                 const items = [
                     {
                         label: '修改',
-                        permission: 'CODE-MODIFY',
+                        permission: 'MATERIAL_UPDATE',
                         onClick: () => {
-                            this.props.router.push(`/system/role/+edit/${id}`);
+                            this.props.router.push(`/materials/+edit/${id}`);
                         },
                     },
                     {
                         label: '删除',
-                        permission: '',
+                        permission: 'MATERIAL_DELETE',
                         confirm: {
                             title: `您确定要删除“${name}”？`,
                             onConfirm: () => {
-                                this.props.$ajax.del(`/system/roles/${id}`, null, {successTip}).then(() => {
+                                this.props.$ajax.del(`/materials/${id}`, null, {successTip}).then(() => {
                                     const dataSource = this.state.dataSource.filter(item => item._id !== id);
                                     this.setState({
                                         dataSource,
