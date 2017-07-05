@@ -68,20 +68,22 @@ export default class <%= capitalName %>Edit extends Component {
                 <h1 style={{textAlign: 'center'}}>{title}</h1>
                 <Form onSubmit={this.handleSubmit}>
                     {!isAdd ? getFieldDecorator('_id', {initialValue: data._id})(<Input type="hidden"/>) : null}
+<% for (let i = 0;i<fields.length;i++){%>
                     <FormItemLayout
-                        label="名称"
+                        label="<%= fields[i].title%>"
                         labelSpaceCount={labelSpaceCount}
                         style={{maxWidth: 300}}
                     >
-                        {getFieldDecorator('name', {
-                            initialValue: data.name,
+                        {getFieldDecorator('<%= fields[i].dataIndex%>', {
+                            initialValue: data.<%= fields[i].dataIndex%>,
                             rules: [
-                                {required: true, message: '请输入名称！'},
+                                {required: true, message: '请输入<%= fields[i].title%>！'},
                             ],
                         })(
-                            <Input placeholder="请输入名称"/>
+                            <Input placeholder="请输入<%= fields[i].title%>"/>
                         )}
                     </FormItemLayout>
+<%}%>
                     <div>
                         <Button
                             style={{marginRight: 8}}

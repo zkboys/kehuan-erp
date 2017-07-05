@@ -17,12 +17,17 @@ const name = 'company';
 const capitalName = 'Company';
 const allCapitalName = 'COMPANY';
 const pluralityName = 'companies';
+const fields = [
+    {title: '公司名称', dataIndex: 'name'},
+    {title: '地址', dataIndex: 'address'},
+];
 
 const config = {
     name,
     capitalName,
     allCapitalName,
     pluralityName,
+    fields,
     listTemplate: './list.ejs',
     listDir: path.join(__dirname, `../assets/src/pages/${name}`),
     listFile: 'List.jsx',

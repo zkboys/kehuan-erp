@@ -36,8 +36,8 @@ export default class <%= capitalName %>List extends Component {
         },
     ];
 
-    columns = [
-        {title: '名称', dataIndex: 'name', key: 'name'},
+    columns = [<% for (let i = 0;i<fields.length;i++){%>
+        {title: '<%= fields[i].title%>', dataIndex: '<%= fields[i].dataIndex%>', key: '<%= fields[i].dataIndex%>'},<%}%>
         {
             title: '操作',
             key: 'operator',
