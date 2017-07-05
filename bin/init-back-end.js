@@ -16,11 +16,13 @@ function generateFile(template, cfg, file) {
 const name = 'company';
 const capitalName = 'Company';
 const pluralityName = 'companies';
+const allCapitalName = 'COMPANY';
 
 const config = {
     name,
     capitalName,
     pluralityName,
+    allCapitalName,
     modelTemplate: './model.ejs',
     proxyTemplate: './proxy.ejs',
     serviceTemplate: './service.ejs',
@@ -62,9 +64,9 @@ function routes(cfg) {
     content = content.replace('// routes end 代码生成注释，这个注释不要删除！！！', `
 router.get('/api/${cfg.pluralityName}', userRequired, ${cfg.name}.getByPage);
 router.get('/api/${cfg.pluralityName}/:id', userRequired, ${cfg.name}.getById);
-router.post('/api/${cfg.pluralityName}', userRequired, ${cfg.name}.add);
-router.put('/api/${cfg.pluralityName}', userRequired, ${cfg.name}.update);
-router.delete('/api/${cfg.pluralityName}/:id', userRequired, ${cfg.name}.deleteById);
+router.post('/api/${cfg.pluralityName}', userRequired, permission('${cfg.allCapitalName}_UPDATE'), ${cfg.name}.add);
+router.put('/api/${cfg.pluralityName}', permission('${cfg.allCapitalName}_UPDATE'), userRequired, ${cfg.name}.update);
+router.delete('/api/${cfg.pluralityName}/:id', userRequired, permission('${cfg.allCapitalName}_UPDATE'), ${cfg.name}.deleteById);
 // routes end 代码生成注释，这个注释不要删除！！！`);
 
     content = content.replace('// require end 代码生成注释，这个注释不要删除！！！',

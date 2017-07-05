@@ -66,15 +66,15 @@ router.delete('/api/system/roles/:id', userRequired, permission('ROLE_DELETE'), 
 
 router.get('/api/materials', userRequired, material.getByPage);
 router.get('/api/materials/:id', userRequired, material.getById);
-router.post('/api/materials', userRequired, material.add);
-router.put('/api/materials', userRequired, material.update);
-router.delete('/api/materials/:id', userRequired, material.deleteById);
+router.post('/api/materials', userRequired, permission('MATERIAL_ADD'), material.add);
+router.put('/api/materials', userRequired, permission('MATERIAL_UPDATE'), material.update);
+router.delete('/api/materials/:id', userRequired, permission('MATERIAL_DELETE'), material.deleteById);
 
 router.get('/api/products', userRequired, product.getByPage);
 router.get('/api/products/:id', userRequired, product.getById);
-router.post('/api/products', userRequired, product.add);
-router.put('/api/products', userRequired, product.update);
-router.delete('/api/products/:id', userRequired, product.deleteById);
+router.post('/api/products', userRequired, permission('PRODUCT_UPDATE'), product.add);
+router.put('/api/products', userRequired, permission('PRODUCT_UPDATE'), product.update);
+router.delete('/api/products/:id', userRequired, permission('PRODUCT_UPDATE'), product.deleteById);
 // routes end 代码生成注释，这个注释不要删除！！！
 
 router.get('*', userRequired, function (req, res, next) {

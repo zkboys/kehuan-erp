@@ -42,12 +42,8 @@ class Login extends Component {
                 id,
                 name,
                 loginName,
+                permissions,
             } = user;
-            const permissions = menus.map(item => {
-                if (item.type === '0') return item.key;
-                if (item.type === '1') return item.code;
-                return null;
-            });
             const currentLoginUser = {
                 id,
                 name,

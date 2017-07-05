@@ -8,8 +8,12 @@ exports.login = controllerDecorator(async function (req, res, next) {
     const pass = req.body.password;
 
     const user = await userService.getUserByLoginNameAndPass(loginName, pass);
-    user.permissions = await userService.getUserPermissions(user);
     const menus = await userService.getUserMenus(user);
+    user.permissions = menus.map(item => {
+        if (item.type === '0') return item.key;
+        if (item.type === '1') return item.code;
+        return null;
+    });
     const refer = req.session._loginReferer || '/';
 
     req.session.destroy();
@@ -26,8 +30,12 @@ exports.firstLogin = controllerDecorator(async function (req, res, next) {
     const newPassRepeat = req.body.rePass;
 
     const updatedUser = await userService.updatePass(userId, oldPass, newPass, newPassRepeat);
-    updatedUser.permissions = await userService.getUserPermissions(updatedUser);
     const menus = await userService.getUserMenus(updatedUser);
+    updatedUser.permissions = menus.map(item => {
+        if (item.type === '0') return item.key;
+        if (item.type === '1') return item.code;
+        return null;
+    });
 
     req.session.destroy();
     authMiddleWare.generateUserCookie(updatedUser, res);

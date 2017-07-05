@@ -99,16 +99,6 @@ exports.resetUserPass = async function (userId) {
     return await UserProxy.update(user);
 }
 
-exports.getUserPermissions = async function (user) {
-    const role = await RoleProxy.getRoleById(user.role_id);
-
-    if (role) {
-        return role.permissions;
-    }
-
-    return null
-};
-
 exports.getUserMenus = async function (user) {
     return await MenuProxy.getByUser(user);
 };
