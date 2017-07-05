@@ -34,7 +34,6 @@ module.exports = function getBaseController(service) {
             }
         ),
 
-
         deleteById: controllerDecorator(async(req, res, next) => {
                 const id = req.params.id;
                 await service.deleteById(id);

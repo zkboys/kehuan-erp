@@ -4,11 +4,11 @@ import {PageContent, FormItemLayout} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import UnitSelect from '../components/UnitSelect';
 
-export const PAGE_ROUTE = '/materials/+edit/:id';
+export const PAGE_ROUTE = '/products/+edit/:id';
 
 @ajax()
 @Form.create()
-export default class MaterialEdit extends Component {
+export default class ProductEdit extends Component {
     state = {
         loading: false,
         isAdd: true,
@@ -22,7 +22,7 @@ export default class MaterialEdit extends Component {
             this.setState({isAdd: true});
         } else {
             this.setState({isAdd: false});
-            $ajax.get(`/materials/${id}`).then(res => {
+            $ajax.get(`/products/${id}`).then(res => {
                 this.setState({
                     data: res,
                 });
@@ -44,8 +44,8 @@ export default class MaterialEdit extends Component {
 
                 this.setState({loading: true});
 
-                submitAjax('/materials', values).then(() => {
-                    message.success(successTip, 1.5, () => router.push('/materials'));
+                submitAjax('/products', values).then(() => {
+                    message.success(successTip, 1.5, () => router.push('/products'));
                 }).catch(() => {
                     this.setState({loading: false});
                 });
@@ -95,6 +95,21 @@ export default class MaterialEdit extends Component {
                             ],
                         })(
                             <Input placeholder="请输入规格"/>
+                        )}
+                    </FormItemLayout>
+
+                    <FormItemLayout
+                        label="型号"
+                        labelSpaceCount={labelSpaceCount}
+                        style={{maxWidth: 300}}
+                    >
+                        {getFieldDecorator('model', {
+                            initialValue: data.model,
+                            rules: [
+                                {required: true, message: '请输入型号！'},
+                            ],
+                        })(
+                            <Input placeholder="请输入型号"/>
                         )}
                     </FormItemLayout>
 

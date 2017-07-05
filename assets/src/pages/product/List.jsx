@@ -3,7 +3,7 @@ import {Operator, ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {units} from '../components/UnitSelect';
 
-export const PAGE_ROUTE = '/materials';
+export const PAGE_ROUTE = '/products';
 
 @ajax()
 export default class extends Component {
@@ -31,7 +31,7 @@ export default class extends Component {
             text: '添加',
             permission: 'MATERIAL_ADD',
             onClick: () => {
-                this.props.router.push('/materials/+edit/:id');
+                this.props.router.push('/products/+edit/:id');
             },
         },
     ];
@@ -39,6 +39,7 @@ export default class extends Component {
     columns = [
         {title: '名称', dataIndex: 'name', key: 'name'},
         {title: '规格', dataIndex: 'spec', key: 'spec'},
+        {title: '型号', dataIndex: 'model', key: 'model'},
         {
             title: '单位',
             dataIndex: 'unit',
@@ -62,7 +63,7 @@ export default class extends Component {
                         label: '修改',
                         permission: 'MATERIAL_UPDATE',
                         onClick: () => {
-                            this.props.router.push(`/materials/+edit/${id}`);
+                            this.props.router.push(`/products/+edit/${id}`);
                         },
                     },
                     {
@@ -71,7 +72,7 @@ export default class extends Component {
                         confirm: {
                             title: `您确定要删除“${name}”？`,
                             onConfirm: () => {
-                                this.props.$ajax.del(`/materials/${id}`, null, {successTip}).then(() => {
+                                this.props.$ajax.del(`/products/${id}`, null, {successTip}).then(() => {
                                     const dataSource = this.state.dataSource.filter(item => item._id !== id);
                                     this.setState({
                                         dataSource,
@@ -88,7 +89,7 @@ export default class extends Component {
     ];
 
     handleSearch = (params) => {
-        return this.props.$ajax.get('/materials', params)
+        return this.props.$ajax.get('/products', params)
             .then(res => {
                 this.setState({
                     total: res.totalCount,

@@ -1,0 +1,5 @@
+const <%=capitalName%>Modal = require('../models').<%=capitalName%>;
+const getBaseProxy = require('./base-proxy');
+
+module.exports = Object.assign({}, getBaseProxy(<%=capitalName%>Modal), {});
+

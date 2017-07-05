@@ -1,0 +1,4 @@
+const <%= capitalName %>Proxy = require('../proxy/<%= name %>');
+const getBaseService = require('./base-service');
+
+module.exports = Object.assign({}, getBaseService(<%= capitalName %>Proxy), {});

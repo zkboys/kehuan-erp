@@ -10,6 +10,8 @@ const organization = require('../controller/organization');
 const user = require('../controller/user');
 const role = require('../controller/role');
 const material = require('../controller/material');
+const product = require('../controller/product');
+// require end 代码生成注释，这个注释不要删除！！！
 
 router.get('/', userRequired, function (req, res) {
     res.render('index');
@@ -68,6 +70,12 @@ router.post('/api/materials', userRequired, material.add);
 router.put('/api/materials', userRequired, material.update);
 router.delete('/api/materials/:id', userRequired, material.deleteById);
 
+router.get('/api/products', userRequired, product.getByPage);
+router.get('/api/products/:id', userRequired, product.getById);
+router.post('/api/products', userRequired, product.add);
+router.put('/api/products', userRequired, product.update);
+router.delete('/api/products/:id', userRequired, product.deleteById);
+// routes end 代码生成注释，这个注释不要删除！！！
 
 router.get('*', userRequired, function (req, res, next) {
     //  根据约定 区分不同得请求类型，返回不同的数据。
