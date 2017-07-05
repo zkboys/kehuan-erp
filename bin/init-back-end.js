@@ -64,9 +64,9 @@ function routes(cfg) {
     content = content.replace('// routes end 代码生成注释，这个注释不要删除！！！', `
 router.get('/api/${cfg.pluralityName}', userRequired, ${cfg.name}.getByPage);
 router.get('/api/${cfg.pluralityName}/:id', userRequired, ${cfg.name}.getById);
-router.post('/api/${cfg.pluralityName}', userRequired, permission('${cfg.allCapitalName}_UPDATE'), ${cfg.name}.add);
+router.post('/api/${cfg.pluralityName}', userRequired, permission('${cfg.allCapitalName}_ADD'), ${cfg.name}.add);
 router.put('/api/${cfg.pluralityName}', permission('${cfg.allCapitalName}_UPDATE'), userRequired, ${cfg.name}.update);
-router.delete('/api/${cfg.pluralityName}/:id', userRequired, permission('${cfg.allCapitalName}_UPDATE'), ${cfg.name}.deleteById);
+router.delete('/api/${cfg.pluralityName}/:id', userRequired, permission('${cfg.allCapitalName}_DELETE'), ${cfg.name}.deleteById);
 // routes end 代码生成注释，这个注释不要删除！！！`);
 
     content = content.replace('// require end 代码生成注释，这个注释不要删除！！！',
