@@ -1,7 +1,7 @@
 const <%= capitalName %>Service = require('../service/<%= name %>');
 const getBaseController = require('./base-controller');
 
-const baseController = getBaseController(ProductService);
+const baseController = getBaseController(<%= capitalName %>Service);
 
 module.exports = Object.assign({}, baseController, {
     getByPage(req, res, next){

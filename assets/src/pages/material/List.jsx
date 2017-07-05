@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Operator, ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {units} from '../components/UnitSelect';
+import {hasPermission} from '../../commons';
 
 export const PAGE_ROUTE = '/materials';
 
@@ -82,7 +83,7 @@ export default class extends Component {
                     },
                 ];
 
-                return (<Operator items={items} hasPermission={() => true}/>);
+                return (<Operator items={items} hasPermission={hasPermission}/>);
             },
         },
     ];
@@ -101,6 +102,7 @@ export default class extends Component {
         const {total, dataSource} = this.state;
         return (
             <ListPage
+                hasPermission={hasPermission}
                 queryItems={this.queryItems}
                 showSearchButton
                 showResetButton={false}

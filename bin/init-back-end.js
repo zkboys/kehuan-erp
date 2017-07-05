@@ -1,3 +1,9 @@
+/*
+ * 代码生成工具
+ * cd bin
+ * node init.js
+ * 注意：重复生成 model/index.js routes/index.js中会有多余代码
+ * */
 const ejs = require('ejs-mate');
 const path = require('path');
 const fs = require('fs');

@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {Operator, ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
-import {units} from '../components/UnitSelect';
 import {hasPermission} from '../../commons';
 
-export const PAGE_ROUTE = '/products';
+export const PAGE_ROUTE = '/<%= pluralityName %>';
 
 @ajax()
-export default class extends Component {
+export default class <%= capitalName %>List extends Component {
     state = {
         total: 0,
         dataSource: [],
@@ -18,10 +17,10 @@ export default class extends Component {
             {
                 type: 'input',
                 field: 'name',
-                label: '原料名称',
+                label: '名称',
                 labelSpaceCount: 4,
                 width: 200,
-                placeholder: '请输入原料名称',
+                placeholder: '请输入名称',
             },
         ],
     ];
@@ -30,29 +29,15 @@ export default class extends Component {
         {
             type: 'primary',
             text: '添加',
-            permission: 'MATERIAL_ADD',
+            permission: '<%= allCapitalName %>_ADD',
             onClick: () => {
-                this.props.router.push('/products/+edit/:id');
+                this.props.router.push('/<%= pluralityName %>/+edit/:id');
             },
         },
     ];
 
     columns = [
         {title: '名称', dataIndex: 'name', key: 'name'},
-        {title: '规格', dataIndex: 'spec', key: 'spec'},
-        {title: '型号', dataIndex: 'model', key: 'model'},
-        {
-            title: '单位',
-            dataIndex: 'unit',
-            key: 'unit',
-            render(text) {
-                const u = units.find(item => item.code === text);
-                if (u) return u.name;
-                return text;
-            },
-        },
-        {title: '单价', dataIndex: 'unitPrice', key: 'unitPrice'},
-        {title: '备注', dataIndex: 'remark', key: 'remark'},
         {
             title: '操作',
             key: 'operator',
@@ -62,18 +47,18 @@ export default class extends Component {
                 const items = [
                     {
                         label: '修改',
-                        permission: 'MATERIAL_UPDATE',
+                        permission: '<%= allCapitalName %>_UPDATE',
                         onClick: () => {
-                            this.props.router.push(`/products/+edit/${id}`);
+                            this.props.router.push(`/<%= pluralityName %>/+edit/${id}`);
                         },
                     },
                     {
                         label: '删除',
-                        permission: 'MATERIAL_DELETE',
+                        permission: '<%= allCapitalName %>_DELETE',
                         confirm: {
                             title: `您确定要删除“${name}”？`,
                             onConfirm: () => {
-                                this.props.$ajax.del(`/products/${id}`, null, {successTip}).then(() => {
+                                this.props.$ajax.del(`/<%= pluralityName %>/${id}`, null, {successTip}).then(() => {
                                     const dataSource = this.state.dataSource.filter(item => item._id !== id);
                                     this.setState({
                                         dataSource,
@@ -90,7 +75,7 @@ export default class extends Component {
     ];
 
     handleSearch = (params) => {
-        return this.props.$ajax.get('/products', params)
+        return this.props.$ajax.get('/<%= pluralityName %>', params)
             .then(res => {
                 this.setState({
                     total: res.totalCount,
