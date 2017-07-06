@@ -2,21 +2,18 @@
  * 代码生成工具
  * cd bin
  * node init.js
- * 注意：重复生成 model/index.js routes/index.js中会有多余代码
  * */
-const ejs = require('ejs-mate');
+const ejs = require('ejs');
 const path = require('path');
 const fs = require('fs');
+const pluralize = require('pluralize');
 
-function generateFile(template, cfg, file) {
-    ejs(template, cfg, (err, content) => {
-        fs.writeFileSync(file, content);
-    });
+function firstUpperCase(str) {
+    return str.replace(/\b(\w)(\w*)/g, ($0, $1, $2) => $1.toUpperCase() + $2);
 }
+
 const name = 'company';
-const capitalName = 'Company';
-const allCapitalName = 'COMPANY';
-const pluralityName = 'companies';
+const ajaxUrl = '/v1/company';
 const fields = [
     {title: '公司名称', dataIndex: 'name'},
     {title: '地址', dataIndex: 'address'},
@@ -24,9 +21,10 @@ const fields = [
 
 const config = {
     name,
-    capitalName,
-    allCapitalName,
-    pluralityName,
+    capitalName: firstUpperCase(name),
+    allCapitalName: name.toUpperCase(),
+    pluralityName: pluralize(name),
+    ajaxUrl,
     fields,
     listTemplate: './list.ejs',
     listDir: path.join(__dirname, `../assets/src/pages/${name}`),
@@ -35,6 +33,12 @@ const config = {
     editDir: path.join(__dirname, `../assets/src/pages/${name}`),
     editFile: 'Edit.jsx',
 };
+
+function generateFile(template, cfg, file) {
+    ejs.renderFile(template, cfg, (err, content) => {
+        fs.writeFileSync(file, content);
+    });
+}
 
 function list(cfg) {
     const existsDir = fs.existsSync(cfg.listDir);
