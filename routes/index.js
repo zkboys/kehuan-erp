@@ -19,8 +19,7 @@ router.get('/', userRequired, function (req, res) {
 
 
 router.get('/signin', function (req, res) {
-    console.log('signin');
-    res.render('signin');
+    res.render('login');
 });
 
 

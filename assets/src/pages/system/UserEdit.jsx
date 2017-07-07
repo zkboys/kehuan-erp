@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {PageContent} from 'zk-tookit/antd';
-import {Form, Input, Button} from 'antd';
+import {Form, Input, Button, message} from 'antd';
 import {ajax} from 'zk-tookit/react';
 import OrganizationSelect from '../components/OrganizationSelect';
 import validationRule from '../../commons/validation-rule';
@@ -27,9 +27,11 @@ export default class SystemUserEdit extends Component {
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 let submitAjax = isAdd ? $ajax.post : $ajax.put;
+                const successTip = isAdd ? '添加成功' : '修改成功';
                 this.setState({loading: true});
                 submitAjax('/system/users', values).then(() => {
                     router.push('/system/user');
+                    message.success(successTip, 1.5, () => router.push('/system/user'));
                 }).finally(() => {
                     this.setState({loading: false});
                 });
@@ -44,7 +46,6 @@ export default class SystemUserEdit extends Component {
         } else { // 修改
             this.setState({isAdd: false});
             this.props.$ajax.get(`/system/users/${id}`).then(res => {
-                console.log(res);
                 this.setState({user: res});
             }).finally(() => this.setState({loading: false}));
         }

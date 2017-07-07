@@ -22,9 +22,9 @@ module.exports = {
     useCSSModulePath: path.resolve(__dirname, '../', 'src/pages'),
     build: {
         env: '"production"',
-        assetsRoot: path.join(__dirname, '../public'), // webpack 构建生成文件存放路径
+        assetsRoot: path.join(__dirname, '../../public'), // webpack 构建生成文件存放路径
         assetsSubDirectory: 'static',
-        assetsPublicPath: '/', // cdn
+        assetsPublicPath: '/public/', // cdn
         productionSourceMap: false,
         // Gzip off by default as many popular static hosts such as
         // Surge or Netlify already gzip all static assets for you.

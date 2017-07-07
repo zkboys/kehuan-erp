@@ -132,6 +132,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             template: './index.html',
             title: '酒店管理系统',
             inject: true,
+            csrf: '<%= csrf %>',
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,
@@ -149,6 +150,7 @@ const webpackConfig = merge(baseWebpackConfig, {
             template: './index.html',
             title: '登录',
             inject: true,
+            csrf: '<%= csrf %>',
             minify: {
                 removeComments: true,
                 collapseWhitespace: true,

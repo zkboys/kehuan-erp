@@ -8,7 +8,7 @@ import './global.less';
 import configureStore from './redux/store/configure-store';
 import Router from './route/Router';
 import handleErrorMessage from './commons/handle-error-message';
-import {getCurrentLoginUser, getAjaxBaseUrl, isMock, toLogin} from './commons';
+import {getCurrentLoginUser, getAjaxBaseUrl, isMock, toLogin, getCsrf} from './commons';
 
 if (process.env.NODE_ENV === 'development') {
     require('./mock/index');
@@ -25,6 +25,7 @@ initStorage({ // 设置存储前缀，用于区分不同用户的数据
 promiseAjax.init({
     setOptions: (instance) => {
         instance.defaults.baseURL = getAjaxBaseUrl();
+        instance.defaults.headers.common['CSRF-Token'] = getCsrf();
     },
     onShowErrorTip: (err, errorTip) => {
         handleErrorMessage(err, errorTip);

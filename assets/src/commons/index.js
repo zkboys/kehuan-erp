@@ -55,3 +55,10 @@ export function hasPermission(code) {
     const {permissions = []} = currentLoginUser;
     return permissions.includes(code);
 }
+/**
+ * 获取csrf字符串
+ * @returns {string}
+ */
+export function getCsrf() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}

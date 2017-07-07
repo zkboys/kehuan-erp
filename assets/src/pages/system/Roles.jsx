@@ -48,7 +48,7 @@ export default class extends Component {
                 const items = [
                     {
                         label: '修改',
-                        permission: 'CODE-MODIFY',
+                        permission: 'ROLE_UPDATE',
                         onClick: () => {
                             this.props.router.push(`/system/role/+edit/${id}`);
                         },

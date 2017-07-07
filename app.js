@@ -92,28 +92,26 @@ app.use(resExtend.resExtend);
 app.use(auth.authUser); // 验证用户是否登录，从session中或者cookie中获取用户
 app.use(auth.blockUser()); // 验证用户是否被锁定
 
-
-if (!config.debug) {
+if (config.debug) {
     app.use(function (req, res, next) {
-        csurf()(req, res, next);
+        // FIXME 设置跨域访问
+        res.header("Access-Control-Allow-Origin", config.allow_origin);
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, CSRF-Token");
+        res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+        res.header("Access-Control-Allow-Credentials", "true"); // 允许跨域访问时带上cookie信息
+        res.header("X-Powered-By", ' 3.2.1')
+        res.header("Content-Type", "application/json;charset=utf-8");
+        next();
     });
+} else {
+    app.use(csurf());
 
+    app.use(function (req, res, next) {
+        res.locals.csrf = req.csrfToken ? req.csrfToken() : '';
+        next();
+    });
     app.set('view cache', true);
 }
-
-app.use(function (req, res, next) {
-    // FIXME 设置跨域访问
-    res.header("Access-Control-Allow-Origin", config.allow_origin);
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-    res.header("Access-Control-Allow-Credentials", "true"); // 允许跨域访问时带上cookie信息
-    res.header("X-Powered-By", ' 3.2.1')
-    res.header("Content-Type", "application/json;charset=utf-8");
-
-    res.locals.csrf = req.csrfToken ? req.csrfToken() : '';
-    next();
-});
-
 // routes
 app.use('/', routes);
 

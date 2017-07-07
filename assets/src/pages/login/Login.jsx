@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import * as promiseAjax from 'zk-tookit/utils/promise-ajax';
 import {init as initStorage} from 'zk-tookit/utils/storage';
 import {convertToTree} from 'zk-tookit/utils/tree-utils';
-import {setCurrentLoginUser, setMenuTreeData, isMock, getAjaxBaseUrl} from '../../commons';
+import {setCurrentLoginUser, setMenuTreeData, isMock, getAjaxBaseUrl, getCsrf} from '../../commons';
 import './style.less';
 import LoginForm from '../components/LoginForm';
 import PasswordForm from '../components/PasswordForm';
@@ -18,6 +18,7 @@ if (process.env.NODE_ENV === 'development') {
 promiseAjax.init({
     setOptions: (instance) => {
         instance.defaults.baseURL = getAjaxBaseUrl();
+        instance.defaults.headers.common['CSRF-Token'] = getCsrf();
     },
     isMock,
 });

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Row, Col, Form, Input, Card, Button, Tree, Switch} from 'antd';
+import {Row, Col, Form, Input, Card, Button, Tree, Switch, message} from 'antd';
 import {PageContent, FormItemLayout} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {
@@ -70,9 +70,10 @@ export default class SystemRoleEdit extends Component {
             if (!err) {
                 values.permissions = this.state.checkedKeys;
                 let submitAjax = isAdd ? $ajax.post : $ajax.put;
+                const successTip = isAdd ? '添加成功' : '修改成功';
                 this.setState({loading: true});
                 submitAjax('/system/roles', values).then(() => {
-                    router.push('/system/role');
+                    message.success(successTip, 1.5, () => router.push('/system/role'));
                 }).finally(() => {
                     this.setState({loading: false});
                 });

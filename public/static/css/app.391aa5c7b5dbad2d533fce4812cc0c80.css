@@ -1,0 +1,29 @@
+.src-pages-error-style-error-page {
+  padding-top: 10px;
+  text-align: center;
+}
+.src-pages-error-style-error-page img {
+  width: 200px;
+}
+.src-pages-error-style-error-page .src-pages-error-style-error-text {
+  margin-top: 15px;
+  font-size: 20px;
+}
+.src-pages-error-style-error-page .src-pages-error-style-error-sub-text {
+  font-size: 16px;
+}
+.src-pages-error-style-error-page .src-pages-error-style-error-btn {
+  margin-top: 12px;
+}
+.src-pages-error-style-error-page .src-pages-error-style-error-btn a {
+  color: #fff;
+}
+.src-pages-error-style-error-page .src-pages-error-style-error-btn-right {
+  margin-left: 16px;
+}
+.src-pages-home-style-root {
+  color: red;
+}
+.src-pages-home-style-title {
+  color: green;
+}
