@@ -54,7 +54,7 @@ const app = express();
 app.set('views', path.join(__dirname, 'public'));
 // app.set('view engine', 'ejs');
 app.set('view engine', 'html');
-app.engine('html', require('ejs-mate'));
+app.engine('html', require('ejs').renderFile);
 app.enable('trust proxy');
 
 // 静态资源文件
