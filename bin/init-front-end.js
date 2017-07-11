@@ -12,11 +12,10 @@ function firstUpperCase(str) {
     return str.replace(/\b(\w)(\w*)/g, ($0, $1, $2) => $1.toUpperCase() + $2);
 }
 
-const name = 'company';
-const ajaxUrl = '/v1/company';
+const name = 'order';
+const ajaxUrl = '/order';
 const fields = [
-    {title: '公司名称', dataIndex: 'name'},
-    {title: '地址', dataIndex: 'address'},
+    {title: '发起人', dataIndex: 'sendUserId'},
 ];
 
 const config = {

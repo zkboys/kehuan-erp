@@ -7,6 +7,8 @@ const SchemaModel = new Schema({
     model: {type: String}, // 型号
     unit: {type: String}, // 单位 平米
     unitPrice: {type: String}, // 单价
+    singleUnit: {type: String}, // 单个总量 平米
+    singleUnitPrice: {type: String}, // 单个总价
     remark: {type: String},
 });
 

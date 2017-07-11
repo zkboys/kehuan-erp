@@ -11,6 +11,7 @@ const user = require('../controller/user');
 const role = require('../controller/role');
 const material = require('../controller/material');
 const product = require('../controller/product');
+const order = require('../controller/order');
 // require end 代码生成注释，这个注释不要删除！！！
 
 router.get('/', userRequired, function (req, res) {
@@ -74,6 +75,12 @@ router.get('/api/products/:id', userRequired, product.getById);
 router.post('/api/products', userRequired, permission('PRODUCT_UPDATE'), product.add);
 router.put('/api/products', userRequired, permission('PRODUCT_UPDATE'), product.update);
 router.delete('/api/products/:id', userRequired, permission('PRODUCT_UPDATE'), product.deleteById);
+
+router.get('/api/orders', userRequired, order.getByPage);
+router.get('/api/orders/:id', userRequired, order.getById);
+router.post('/api/orders', userRequired, permission('ORDER_ADD'), order.add);
+router.put('/api/orders', permission('ORDER_UPDATE'), userRequired, order.update);
+router.delete('/api/orders/:id', userRequired, permission('ORDER_DELETE'), order.deleteById);
 // routes end 代码生成注释，这个注释不要删除！！！
 
 router.get('*', userRequired, function (req, res, next) {

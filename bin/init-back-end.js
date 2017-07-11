@@ -7,22 +7,25 @@
 const ejs = require('ejs');
 const path = require('path');
 const fs = require('fs');
+const pluralize = require('pluralize');
+
+function firstUpperCase(str) {
+    return str.replace(/\b(\w)(\w*)/g, ($0, $1, $2) => $1.toUpperCase() + $2);
+}
 
 function generateFile(template, cfg, file) {
     ejs.renderFile(template, cfg, (err, content) => {
         fs.writeFileSync(file, content);
     });
 }
-const name = 'company';
-const capitalName = 'Company';
-const pluralityName = 'companies';
-const allCapitalName = 'COMPANY';
+
+const name = 'order';
 
 const config = {
     name,
-    capitalName,
-    pluralityName,
-    allCapitalName,
+    pluralityName: pluralize(name),
+    capitalName: firstUpperCase(name),
+    allCapitalName: name.toUpperCase(),
     modelTemplate: './model.ejs',
     proxyTemplate: './proxy.ejs',
     serviceTemplate: './service.ejs',

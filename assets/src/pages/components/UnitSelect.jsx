@@ -4,13 +4,18 @@ import {Select} from 'antd';
 const Option = Select.Option;
 
 export const units = [
-    {code: 'm*m', name: '平米(㎡)'},
-    {code: 'kg', name: '千克(kg)'},
-    {code: 'g', name: '克(g)'},
-    {code: 't', name: '顿(t)'},
-    {code: 'ge', name: '个'},
-    {code: 'box', name: '箱'},
-    {code: 'other', name: '其他'},
+    {code: 'squareMetre', name: '平米(㎡)', shortName: '㎡'},
+    {code: 'gen', name: '根', shortName: '根'},
+    {code: 'zhang', name: '张', shortName: '张'},
+    {code: 'kg', name: '千克(kg)', shortName: 'kg'},
+    {code: 'g', name: '克(g)', shortName: 'g'},
+    {code: 't', name: '吨(t)', shortName: 't'},
+    {code: 'ge', name: '个', shortName: '个'},
+    {code: 'box', name: '箱', shortName: '箱'},
+    {code: 'package', name: '包', shortName: '包'},
+    {code: 'reel', name: '卷', shortName: '卷'},
+    {code: 'bundle', name: '捆', shortName: '捆'},
+    {code: 'other', name: '其他', shortName: '其他'},
 ];
 
 export default class DomainSelect extends Component {
@@ -19,7 +24,6 @@ export default class DomainSelect extends Component {
     render() {
         return (
             <Select
-                allowClear
                 placeholder="请选择单位"
                 {...this.props}
             >

@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {Operator, ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
-import {units} from '../components/UnitSelect';
 import {hasPermission} from '../../commons';
 
-export const PAGE_ROUTE = '/products';
+export const PAGE_ROUTE = '/orders';
 
 @ajax()
-export default class extends Component {
+export default class OrderList extends Component {
     state = {
         total: 0,
         dataSource: [],
@@ -18,10 +17,10 @@ export default class extends Component {
             {
                 type: 'input',
                 field: 'name',
-                label: '产品名称',
+                label: '名称',
                 labelSpaceCount: 4,
                 width: 200,
-                placeholder: '请输入原料名称',
+                placeholder: '请输入名称',
             },
         ],
     ];
@@ -30,56 +29,15 @@ export default class extends Component {
         {
             type: 'primary',
             text: '添加',
-            permission: 'PRODUCT_ADD',
+            permission: 'ORDER_ADD',
             onClick: () => {
-                this.props.router.push('/products/+edit/:id');
+                this.props.router.push('/orders/+edit/:id');
             },
         },
     ];
 
     columns = [
-        {title: '名称', dataIndex: 'name', key: 'name'},
-        {title: '规格', dataIndex: 'spec', key: 'spec'},
-        {title: '型号', dataIndex: 'model', key: 'model'},
-        {
-            title: '单位',
-            dataIndex: 'unit',
-            key: 'unit',
-            render(text) {
-                const u = units.find(item => item.code === text);
-                if (u) return u.name;
-                return text;
-            },
-        },
-        {
-            title: '单价',
-            dataIndex: 'unitPrice',
-            key: 'unitPrice',
-            render(text, record) {
-                const u = units.find(item => item.code === record.unit);
-                if (u) return `${text}元/${u.shortName}`;
-                return text;
-            },
-        },
-        {
-            title: '单个总量',
-            dataIndex: 'singleUnit',
-            key: 'singleUnit',
-            render(text, record) {
-                const u = units.find(item => item.code === record.unit);
-                if (u) return `${text}${u.shortName}`;
-                return text;
-            },
-        },
-        {
-            title: '单个总价',
-            dataIndex: 'singleUnitPrice',
-            key: 'singleUnitPrice',
-            render(text) {
-                return `${text}元`;
-            },
-        },
-        {title: '备注', dataIndex: 'remark', key: 'remark'},
+        {title: '发起人', dataIndex: 'sendUserId', key: 'sendUserId'},
         {
             title: '操作',
             key: 'operator',
@@ -89,18 +47,18 @@ export default class extends Component {
                 const items = [
                     {
                         label: '修改',
-                        permission: 'PRODUCT_UPDATE',
+                        permission: 'ORDER_UPDATE',
                         onClick: () => {
-                            this.props.router.push(`/products/+edit/${id}`);
+                            this.props.router.push(`/orders/+edit/${id}`);
                         },
                     },
                     {
                         label: '删除',
-                        permission: 'PRODUCT_DELETE',
+                        permission: 'ORDER_DELETE',
                         confirm: {
                             title: `您确定要删除“${name}”？`,
                             onConfirm: () => {
-                                this.props.$ajax.del(`/products/${id}`, null, {successTip}).then(() => {
+                                this.props.$ajax.del(`/orders/${id}`, null, {successTip}).then(() => {
                                     const dataSource = this.state.dataSource.filter(item => item._id !== id);
                                     this.setState({
                                         dataSource,
@@ -117,7 +75,7 @@ export default class extends Component {
     ];
 
     handleSearch = (params) => {
-        return this.props.$ajax.get('/products', params)
+        return this.props.$ajax.get('/orders', params)
             .then(res => {
                 this.setState({
                     total: res.totalCount,

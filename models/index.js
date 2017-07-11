@@ -19,6 +19,7 @@ mongoose.connect(
 mongoose.plugin(BaseModel);
 
 module.exports = {
+    Order: require('./order'),
     Menu: require('./menu'),
     Role: require('./role'),
     User: require('./user'),

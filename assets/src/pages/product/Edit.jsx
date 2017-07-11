@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
-import {Form, Input, Button, message} from 'antd';
+import {Form, Input, Button, message, InputNumber} from 'antd';
 import {PageContent, FormItemLayout} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
-import UnitSelect from '../components/UnitSelect';
+import UnitSelect, {units} from '../components/UnitSelect';
 
 export const PAGE_ROUTE = '/products/+edit/:id';
 
 @ajax()
 @Form.create()
-export default class ProductEdit extends Component {
+export class LayoutComponent extends Component {
     state = {
         loading: false,
         isAdd: true,
@@ -17,11 +17,13 @@ export default class ProductEdit extends Component {
 
     componentWillMount() {
         const {id} = this.props.params;
-        const {$ajax} = this.props;
+        const {$ajax, actions, pageTitle} = this.props;
         if (id === ':id') {
             this.setState({isAdd: true});
+            actions.setPageTitle(`${pageTitle}-添加产品`);
         } else {
             this.setState({isAdd: false});
+            actions.setPageTitle(`${pageTitle}-修改产品`);
             $ajax.get(`/products/${id}`).then(res => {
                 this.setState({
                     data: res,
@@ -57,22 +59,43 @@ export default class ProductEdit extends Component {
         this.props.form.resetFields();
     };
 
-    render() {
-        const {form: {getFieldDecorator}} = this.props;
-        const {loading, isAdd, data = {}} = this.state;
-        const title = isAdd ? '添加XXX' : '修改XXX';
+    getSingleUnitPrice() {
+        const {data} = this.state;
+        const {form: {getFieldValue}} = this.props;
+        // 计算单个总价
+        let singleUnitPrice;
+        const unitPrice = getFieldValue('unitPrice') || data.unitPrice;
+        const singleUnit = getFieldValue('singleUnit') || data.singleUnit;
+        if (unitPrice && singleUnit) {
+            singleUnitPrice = unitPrice * 100 * singleUnit;
+        }
+        return singleUnitPrice ? singleUnitPrice / 100 : singleUnitPrice;
+    }
 
+    render() {
+        const {form: {getFieldDecorator, getFieldValue}} = this.props;
+        const {loading, isAdd, data = {}} = this.state;
         const labelSpaceCount = 4;
+        const tipWidth = 50;
+
+        // 计算单个总价
+        let singleUnitPrice = this.getSingleUnitPrice();
+
+        // 获取单位
+        const unit = getFieldValue('unit');
+        const u = units.find(item => item.code === unit);
+        const unitName = u ? u.shortName : '';
 
         return (
             <PageContent>
-                <h1 style={{textAlign: 'center'}}>{title}</h1>
                 <Form onSubmit={this.handleSubmit}>
                     {!isAdd ? getFieldDecorator('_id', {initialValue: data._id})(<Input type="hidden"/>) : null}
                     <FormItemLayout
                         label="名称"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '66%'}}
+                        tipWidth={tipWidth}
                     >
                         {getFieldDecorator('name', {
                             initialValue: data.name,
@@ -83,10 +106,13 @@ export default class ProductEdit extends Component {
                             <Input placeholder="请输入名称"/>
                         )}
                     </FormItemLayout>
+                    <div style={{clear: 'both'}}/>
                     <FormItemLayout
                         label="规格"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '33%'}}
+                        tipWidth={tipWidth}
                     >
                         {getFieldDecorator('spec', {
                             initialValue: data.spec,
@@ -101,7 +127,9 @@ export default class ProductEdit extends Component {
                     <FormItemLayout
                         label="型号"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '33%'}}
+                        tipWidth={tipWidth}
                     >
                         {getFieldDecorator('model', {
                             initialValue: data.model,
@@ -113,15 +141,19 @@ export default class ProductEdit extends Component {
                         )}
                     </FormItemLayout>
 
+                    <div style={{clear: 'both'}}/>
+
                     <FormItemLayout
                         label="单位"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '33%'}}
+                        tipWidth={tipWidth}
                     >
                         {getFieldDecorator('unit', {
-                            initialValue: data.unit,
+                            initialValue: data.unit || 'squareMetre',
                             rules: [
-                                {required: true, message: '请输入单位！'},
+                                {required: true, message: '请选择单位！'},
                             ],
                         })(
                             <UnitSelect/>
@@ -131,7 +163,10 @@ export default class ProductEdit extends Component {
                     <FormItemLayout
                         label="单价"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '33%'}}
+                        tip={`元/${unitName}`}
+                        tipWidth={tipWidth}
                     >
                         {getFieldDecorator('unitPrice', {
                             initialValue: data.unitPrice,
@@ -139,25 +174,65 @@ export default class ProductEdit extends Component {
                                 {required: true, message: '请输入单价！'},
                             ],
                         })(
-                            <Input placeholder="请输入单价"/>
+                            <InputNumber
+                                style={{width: '100%'}}
+                                min={0}
+                                step={0.01}
+                                placeholder="请输入单价"
+                            />
                         )}
                     </FormItemLayout>
+                    <div style={{clear: 'both'}}/>
+                    <FormItemLayout
+                        label="单个总量"
+                        labelSpaceCount={labelSpaceCount}
+                        float
+                        style={{width: '33%'}}
+                        tip={`${unitName}`}
+                        tipWidth={tipWidth}
+                    >
+                        {getFieldDecorator('singleUnit', {
+                            initialValue: data.singleUnit || 1,
+                            rules: [
+                                {required: true, message: '请输入单个总量！'},
+                            ],
+                        })(
+                            <InputNumber
+                                style={{width: '100%'}}
+                                min={0}
+                                step={0.01}
+                                placeholder="请输入单个总量"
+                            />
+                        )}
+                    </FormItemLayout>
+                    <FormItemLayout
+                        label="单个总价"
+                        labelSpaceCount={labelSpaceCount}
+                        float
+                        style={{width: '33%'}}
+                        tip="元"
+                        tipWidth={tipWidth}
+                    >
+                        {getFieldDecorator('singleUnitPrice', {
+                            initialValue: singleUnitPrice,
+                        })(
+                            <Input disabled/>
+                        )}
+                    </FormItemLayout>
+
+                    <div style={{clear: 'both'}}/>
 
                     <FormItemLayout
                         label="备注"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
                     >
                         {getFieldDecorator('remark', {
                             initialValue: data.remark,
-                            rules: [
-                                {required: true, message: '请输入备注！'},
-                            ],
                         })(
-                            <Input type="textarea" placeholder="请输入备注"/>
+                            <Input style={{height: 100}} type="textarea" placeholder="请输入备注"/>
                         )}
                     </FormItemLayout>
-                    <div>
+                    <div style={{paddingLeft: (labelSpaceCount + 2) * 12}}>
                         <Button
                             style={{marginRight: 8}}
                             loading={loading}
@@ -177,4 +252,10 @@ export default class ProductEdit extends Component {
             </PageContent>
         );
     }
+}
+
+export function mapStateToProps(state) {
+    return {
+        ...state.frame,
+    };
 }
