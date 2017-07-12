@@ -39,7 +39,7 @@ router.delete('/api/system/menus/:key', userRequired, menu.deleteByKey);
 router.get('/api/system/organizations', userRequired, organization.getAll);// 这里不要添加权限限制，也不会产生安全性问题，而且用户相关会用到这个接口。
 router.post('/api/system/organizations', userRequired, permission('ORGANIZATION_ADD'), organization.add);
 router.put('/api/system/organizations', userRequired, permission('ORGANIZATION_UPDATE'), organization.update);
-router.delete('/api/system/organizations/:key', userRequired, permission('ORGANIZATION_DELETE'), organization.deleteByKey);
+router.delete('/api/system/organizations/:id', userRequired, permission('ORGANIZATION_DELETE'), organization.deleteById);
 
 // 系统
 router.put('/api/system/pass', userRequired, /*needCurrentUser*/ user.updatePass);

@@ -19,8 +19,10 @@ export default class DomainSelect extends Component {
             const list = res || [];
             const data = list.map(item => {
                 return {
-                    ...item,
+                    key: item._id,
+                    parentKey: item.parentId,
                     text: item.name,
+                    ...item,
                 };
             });
             const treeData = convertToTree(data);

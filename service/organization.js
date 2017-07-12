@@ -11,7 +11,6 @@ exports.updateAllOrganizations = async function (organizations) {
 };
 
 exports.add = async function (data) {
-    data.key = uuidv4();
     return await OrganizationProxy.add(data);
 };
 
@@ -19,10 +18,14 @@ exports.update = async function (data) {
     return await OrganizationProxy.update(data);
 };
 
-exports.deleteByKey = async function (key) {
+exports.deleteById = async function (id) {
     // 删除子级
     const allData = await OrganizationProxy.getAllOrganizations();
-    const generations = tools.getGenerationsByKey(allData, key);
-    const keys = generations.map(item => item.key);
-    return await OrganizationProxy.deleteByKeys(keys);
+    const newData = allData.map(item => {
+        return Object.assign({}, {key: String(item._id), parentKey: String(item.parentId)}, item);
+    });
+    const generations = tools.getGenerationsByKey(newData, id);
+    const ids = generations.map(item => item._id);
+    console.log(ids);
+    return await OrganizationProxy.deleteByIds(ids);
 };

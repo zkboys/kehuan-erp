@@ -85,7 +85,7 @@ class LayoutComponent extends Component {
     // 这里可以注入通用props
     createElement = (RouteComponent, props) => {
         return (
-            <RouteComponent {...props}/>
+            <RouteComponent $currentLoginUser={currentLoginUser} {...props}/>
         );
     }
 

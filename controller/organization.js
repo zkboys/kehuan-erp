@@ -18,9 +18,8 @@ exports.update = controllerDecorator(async function (req, res, next) {
     res.send(updatedData);
 });
 
-
-exports.deleteByKey = controllerDecorator(async function (req, res, next) {
-    const key = req.params.key;
-    await OrganizationService.deleteByKey(key);
+exports.deleteById = controllerDecorator(async function (req, res, next) {
+    const id = req.params.id;
+    await OrganizationService.deleteById(id);
     res.sendSuccess();
 });

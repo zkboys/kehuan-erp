@@ -59,11 +59,11 @@ export default class extends Component {
         {title: '登录名', dataIndex: 'loginName', key: 'loginName'},
         {
             title: '所属机构',
-            dataIndex: 'org_key',
-            key: 'org_key',
+            dataIndex: 'org_id',
+            key: 'org_id',
             render: (text) => {
                 const {organizations} = this.state;
-                const org = organizations.find(item => item.key === text);
+                const org = organizations.find(item => item._id === text);
                 if (org) return org.name;
                 return '未选择机构';
             },

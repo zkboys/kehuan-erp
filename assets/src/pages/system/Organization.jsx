@@ -19,7 +19,7 @@ export default class extends Component {
 
     componentWillMount() {
         this.props.$ajax.get('/system/organizations').then(res => {
-            const dataSource = (res || []).map(item => ({text: item.name, ...item}));
+            const dataSource = (res || []).map(item => ({key: item._id, parentKey: item.parentId, text: item.name, ...item}));
             console.log(dataSource);
             this.setState({dataSource});
         });
@@ -62,11 +62,14 @@ export default class extends Component {
         values.name = values.text;
         if (existedNewNode) { // 添加顶级或者子级
             values.key = null;
+            values.parentId = values.parentKey;
             successTip = '添加成功！';
             $ajax.post('/system/organizations', values, {successTip}).then(res => {
                 const savedNode = res;
                 const newData = dataSource.filter(item => item.key !== UN_SAVED_NEW_NODE_KEY);
                 savedNode.text = savedNode.name;
+                savedNode.key = savedNode._id;
+                savedNode.parentKey = savedNode.parentId;
                 newData.push(savedNode);
                 this.setState({
                     dataSource: newData,

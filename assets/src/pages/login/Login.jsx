@@ -34,22 +34,24 @@ class Login extends Component {
     handleLoginSubmit = ({userName, password}) => {
         this.setState({loading: true, errorMessage: ''});
         promiseAjax.post('signin', {userName, password}, {errorTip: false}).then(res => {
-            console.log(res);
             const user = res.user;
             const menus = res.menus;
             const ref = res.ref;
+            console.log(user);
             const {
                 is_first_login: isFirstLogin,
-                id,
+                _id: id,
                 name,
                 loginName,
                 permissions,
             } = user;
+
             const currentLoginUser = {
                 id,
                 name,
                 loginName,
                 permissions,
+                ...user,
             };
             this.setState({currentLoginUser});
             initStorage({
@@ -91,6 +93,7 @@ class Login extends Component {
         const menuTreeData = convertToTree(menus);
         setMenuTreeData(menuTreeData);
         setCurrentLoginUser(currentLoginUser);
+        console.log(ref);
         window.location.href = ref;
     };
 

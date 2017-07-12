@@ -13,7 +13,7 @@ const SchemaModel = new Schema({
     position: {type: String},
     role_id: {type: String},
     is_first_login: {type: Boolean, default: true},
-    org_key: {type: String}, // 这里不要使用org_id ，org_id总是变化，key是不变的。
+    org_id: {type: String},
     is_locked: {type: Boolean, default: false},
 });
 

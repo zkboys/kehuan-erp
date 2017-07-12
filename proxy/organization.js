@@ -13,7 +13,6 @@ exports.getAllOrganizations = function () {
  * @returns {Promise.<TResult>|Promise|*}
  */
 exports.updateAllOrganizations = function (newOrganizations) {
-    // TODO 应该用事务处理
     return OrganizationModel.remove({}).then(() => {
         return OrganizationModel.create(newOrganizations);
     });
@@ -26,13 +25,13 @@ exports.add = function (data) {
 
 exports.update = function (data) {
     data.update_at = new Date();
-    return OrganizationModel.findOneAndUpdate({key: data.key}, data).lean();
+    return OrganizationModel.findOneAndUpdate({_id: data.key}, data).lean();
 };
 
-exports.deleteByKey = function (key) {
-    return OrganizationModel.remove({key}).lean();
+exports.deleteById = function (id) {
+    return OrganizationModel.remove({id}).lean();
 };
 
-exports.deleteByKeys = function (keys) {
-    return OrganizationModel.remove({key: {'$in': keys}}).lean();
+exports.deleteByIds = function (ids) {
+    return OrganizationModel.remove({_id: {'$in': ids}}).lean();
 };
