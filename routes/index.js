@@ -71,6 +71,7 @@ router.put('/api/materials', userRequired, permission('MATERIAL_UPDATE'), materi
 router.delete('/api/materials/:id', userRequired, permission('MATERIAL_DELETE'), material.deleteById);
 
 router.get('/api/products', userRequired, product.getByPage);
+router.get('/api/products/ids', userRequired, product.getByIds);
 router.get('/api/products/:id', userRequired, product.getById);
 router.post('/api/products', userRequired, permission('PRODUCT_UPDATE'), product.add);
 router.put('/api/products', userRequired, permission('PRODUCT_UPDATE'), product.update);

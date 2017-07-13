@@ -8,10 +8,10 @@ const SchemaModel = new Schema({
     sendOrgId: {type: String}, // 发起部门
     receiveOrgId: {type: String}, // 接收部门
     receiveUserId: {type: String}, // 接收人，如果没有指定接收人，就直接到部门，部门下所有人员都可见
-    sendTime: {type: String}, // 下单日期
-    deliveryTime: {type: String}, // 出货日期
+    sendTime: {type: Date}, // 下单日期
+    deliveryTime: {type: Date}, // 出货日期
     products: {type: Array}, // 产品列表
-    remark: {type: String},
+    remark: {type: String}, // 备注
     rejectReason: {type: String}, // 驳回原因
     destroyReason: {type: String}, // 作废原因
     operatorHistory: {type: Array}, // 操作历史 receiveOrgId receiveOrgId status 是操作历史中最后信息

@@ -3,13 +3,14 @@ const controllerDecorator = require('./controller-decorator');
 module.exports = function getBaseController(service) {
     return {
         getById: controllerDecorator(async(req, res, next) => {
-            const id = req.params.id;
+            const id = req.query.id;
             const data = await service.getById(id);
             res.send(data);
         }),
 
         getByIds: controllerDecorator(async(req, res, next) => {
-            const ids = req.params.ids;
+            let ids = req.query.ids;
+            if (ids) ids = ids.split(',');
             const data = await service.getByIds(ids);
             res.send(data);
         }),

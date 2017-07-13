@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {Form, Input, Button, message, DatePicker, Table} from 'antd';
+import {Form, Input, InputNumber, Button, message, DatePicker, Table} from 'antd';
 import {PageContent, FormItemLayout, Operator} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {units} from '../components/UnitSelect';
+import ProductSelect from '../components/ProductSelect';
 
 export const PAGE_ROUTE = '/orders/send';
 
@@ -14,6 +15,7 @@ export default class OrderSend extends Component {
         data: {},
         dataSource: [],
         organizations: [],
+        showProductSelect: false,
     };
 
     columns = [
@@ -58,28 +60,64 @@ export default class OrderSend extends Component {
                 return `${text}元`;
             },
         },
-        {title: '数量', dataIndex: 'count', key: 'count'},
-        {title: '总量', dataIndex: 'total', key: 'total'},
-        {title: '总价', dataIndex: 'totalPrice', key: 'totalPrice'},
+        {
+            title: '数量',
+            dataIndex: 'count',
+            key: 'count',
+            render: (text, record) => {
+                return (
+                    <InputNumber
+                        value={text}
+                        onChange={value => {
+                            const dataSource = [...this.state.dataSource];
+                            const data = dataSource.find(item => item._id === record._id);
+                            data.count = value;
+                            this.setState({dataSource});
+                            this.setTotalPrice(dataSource);
+                        }}
+                    />
+                );
+            },
+        },
+        {
+            title: '总量',
+            dataIndex: 'total',
+            key: 'total',
+            render: (text, record) => {
+                const {singleUnit, count = 0} = record;
+                const value = singleUnit * count;
+                const u = units.find(item => item.code === record.unit);
+                if (u) return `${value}${u.shortName}`;
+                return value;
+            },
+        },
+        {
+            title: '总价',
+            dataIndex: 'totalPrice',
+            key: 'totalPrice',
+            render: (text, record) => {
+                const {singleUnit, unitPrice, count = 0} = record;
+                const value = singleUnit * count * unitPrice;
+                return `${value}元`;
+            },
+        },
         {
             title: '操作',
             key: 'operator',
             render: (text, record) => {
                 const {_id: id, name} = record;
-                const successTip = `删除“${name}”成功！`;
                 const items = [
                     {
-                        label: '删除',
+                        label: '移除',
                         permission: 'PRODUCT_DELETE',
                         confirm: {
-                            title: `您确定要删除“${name}”？`,
+                            title: `您确定要移除“${name}”？`,
                             onConfirm: () => {
-                                this.props.$ajax.del(`/products/${id}`, null, {successTip}).then(() => {
-                                    const dataSource = this.state.dataSource.filter(item => item._id !== id);
-                                    this.setState({
-                                        dataSource,
-                                    });
+                                const dataSource = this.state.dataSource.filter(item => item._id !== id);
+                                this.setState({
+                                    dataSource,
                                 });
+                                this.setTotalPrice(dataSource);
                             },
                         },
                     },
@@ -97,6 +135,14 @@ export default class OrderSend extends Component {
         });
     }
 
+    setTotalPrice(dataSource) {
+        const totalPrice = dataSource.reduce((previous, current) => {
+            const {singleUnit, count, unitPrice} = current;
+            return previous + (singleUnit * count * unitPrice);
+        }, 0);
+        this.props.form.setFieldsValue({totalPrice});
+    }
+
     handleSubmit = (e) => {
         e.preventDefault();
         const {loading, dataSource} = this.state;
@@ -109,6 +155,11 @@ export default class OrderSend extends Component {
                 values.sendTime = new Date();
                 values.products = dataSource;
 
+                values.products.forEach(item => {
+                    const {singleUnit, count, unitPrice} = item;
+                    item.totalPrice = singleUnit * count * unitPrice;
+                    item.total = singleUnit * count;
+                });
                 const successTip = '订单发起成功';
 
                 this.setState({loading: true});
@@ -123,7 +174,18 @@ export default class OrderSend extends Component {
     };
 
     handleAddProduct = () => {
-        console.log('handleAddProduct');
+        this.setState({showProductSelect: true});
+    };
+
+    handleProductSelectOk = (productKeys = []) => {
+        this.setState({showProductSelect: false});
+        if (productKeys && productKeys.length) {
+            this.props.$ajax.get('products/ids', {ids: productKeys.join(',')}).then(res => {
+                const dataSource = res.map(item => ({count: 1, ...item}));
+                this.setState({dataSource});
+                this.setTotalPrice(dataSource);
+            });
+        }
     };
 
     handleReset = () => {
@@ -142,34 +204,16 @@ export default class OrderSend extends Component {
 
     render() {
         const {form: {getFieldDecorator}, $currentLoginUser} = this.props;
-        const {loading, data = {}, dataSource} = this.state;
+        const {loading, data = {}, dataSource, showProductSelect} = this.state;
         const currentLoginUserId = $currentLoginUser.id;
         const currentOrgId = $currentLoginUser.org_id;
         const parentOrg = this.getParentOrg(currentOrgId) || {};
-
+        // receiveOrgId 默认为上级部门 parentOrg
         const labelSpaceCount = 4;
-
-        /*
-         status: {type: String}, // 订单状态： 0 审核中 1 审核通过 2 驳回 3 作废 4 生产中 5 配送中 6 已完成
-         totalPrice: {type: Number}, // 订单总价
-         sendUserId: {type: String}, // 发起人
-         sendOrgId: {type: String}, // 发起部门
-         receiveOrgId: {type: String}, // 接收部门
-         receiveUserId: {type: String}, // 接收人，如果没有指定接收人，就直接到部门，部门下所有人员都可见
-         deliveryTime: {type: String}, // 出货日期
-         remark: {type: String},
-         sendTime: {type: String}, // 下单日期
-
-         products: {type: Array}, // 产品列表
-
-         rejectReason: {type: String}, // 驳回原因
-         destroyReason: {type: String}, // 作废原因
-         operatorHistory: {type: Array}, // 操作历史 recei
-         * */
         return (
             <PageContent>
                 <div style={{marginBottom: 8}}>
-                    <Button type="primary" onClick={this.handleAddProduct}>添加产品</Button>
+                    <Button type="primary" onClick={this.handleAddProduct}>选择产品</Button>
                 </div>
                 <Form onSubmit={this.handleSubmit}>
                     <Table
@@ -177,6 +221,8 @@ export default class OrderSend extends Component {
                         style={{marginBottom: 16}}
                         dataSource={dataSource}
                         columns={this.columns}
+                        rowKey={record => record._id}
+                        pagination={false}
                     />
                     {getFieldDecorator('status', {initialValue: 0})(<Input type="hidden"/>)}
                     {getFieldDecorator('sendUserId', {initialValue: currentLoginUserId})(<Input type="hidden"/>)}
@@ -255,6 +301,11 @@ export default class OrderSend extends Component {
                         </Button>
                     </div>
                 </Form>
+                <ProductSelect
+                    visible={showProductSelect}
+                    onOk={this.handleProductSelectOk}
+                    onCancel={() => this.setState({showProductSelect: false})}
+                />
             </PageContent>
         );
     }

@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
-import {Operator, ListPage} from 'zk-tookit/antd';
+import {Modal} from 'antd';
+import {ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {units} from '../components/UnitSelect';
 import {hasPermission} from '../../commons';
 
-export const PAGE_ROUTE = '/products';
 
 @ajax()
 export default class extends Component {
     state = {
         total: 0,
         dataSource: [],
+        selectedRowKeys: [],
     };
 
     queryItems = [
@@ -40,17 +41,6 @@ export default class extends Component {
                 placeholder: '请输入型号',
             },
         ],
-    ];
-
-    toolItems = [
-        {
-            type: 'primary',
-            text: '添加',
-            permission: 'PRODUCT_ADD',
-            onClick: () => {
-                this.props.router.push('/products/+edit/:id');
-            },
-        },
     ];
 
     columns = [
@@ -96,41 +86,11 @@ export default class extends Component {
             },
         },
         {title: '备注', dataIndex: 'remark', key: 'remark'},
-        {
-            title: '操作',
-            key: 'operator',
-            render: (text, record) => {
-                const {_id: id, name} = record;
-                const successTip = `删除“${name}”成功！`;
-                const items = [
-                    {
-                        label: '修改',
-                        permission: 'PRODUCT_UPDATE',
-                        onClick: () => {
-                            this.props.router.push(`/products/+edit/${id}`);
-                        },
-                    },
-                    {
-                        label: '删除',
-                        permission: 'PRODUCT_DELETE',
-                        confirm: {
-                            title: `您确定要删除“${name}”？`,
-                            onConfirm: () => {
-                                this.props.$ajax.del(`/products/${id}`, null, {successTip}).then(() => {
-                                    const dataSource = this.state.dataSource.filter(item => item._id !== id);
-                                    this.setState({
-                                        dataSource,
-                                    });
-                                });
-                            },
-                        },
-                    },
-                ];
-
-                return (<Operator items={items} hasPermission={hasPermission}/>);
-            },
-        },
     ];
+
+    onSelectChange = (selectedRowKeys) => {
+        this.setState({selectedRowKeys});
+    };
 
     handleSearch = (params) => {
         return this.props.$ajax.get('/products', params)
@@ -142,21 +102,41 @@ export default class extends Component {
             });
     };
 
+    handleOk = () => {
+        const {onOk} = this.props;
+        const {selectedRowKeys} = this.state;
+        onOk(selectedRowKeys);
+        this.setState({selectedRowKeys: []});
+    };
+
     render() {
-        const {total, dataSource} = this.state;
+        const {total, dataSource, selectedRowKeys} = this.state;
+        const {visible, onCancel} = this.props;
+        const rowSelection = {
+            selectedRowKeys,
+            onChange: this.onSelectChange,
+        };
         return (
-            <ListPage
-                hasPermission={hasPermission}
-                queryItems={this.queryItems}
-                showSearchButton
-                showResetButton={false}
-                toolItems={this.toolItems}
-                columns={this.columns}
-                onSearch={this.handleSearch}
-                dataSource={dataSource}
-                rowKey={record => record._id}
-                total={total}
-            />
+            <Modal
+                title="选择产品"
+                visible={visible}
+                onOk={this.handleOk}
+                onCancel={onCancel}
+                width="80%"
+            >
+                <ListPage
+                    hasPermission={hasPermission}
+                    queryItems={this.queryItems}
+                    showSearchButton
+                    showResetButton={false}
+                    columns={this.columns}
+                    onSearch={this.handleSearch}
+                    dataSource={dataSource}
+                    rowKey={record => record._id}
+                    rowSelection={rowSelection}
+                    total={total}
+                />
+            </Modal>
         );
     }
 }
