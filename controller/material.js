@@ -9,7 +9,7 @@ module.exports = Object.assign({}, baseController, {
         ['name'].forEach(v => {
             const value = req.query[v];
             if (value) {
-                query[v] = value;
+                query[v] = new RegExp(value);
             }
         });
         baseController.getByPage(req, res, next, query);

@@ -147,7 +147,7 @@ export default class MaterialEdit extends Component {
                             style={{marginRight: 8}}
                             loading={loading}
                             type="primary"
-                            onClick={this.handleSubmit}
+                            htmlType="submit"
                         >
                             提交
                         </Button>

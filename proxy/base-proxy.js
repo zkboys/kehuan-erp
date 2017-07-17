@@ -16,12 +16,8 @@ module.exports = function getBaseProxy(model) {
         },
         getByPage(currentPage = 1, pageSize = 10, queries = {}) {
             const options = {skip: (currentPage - 1) * pageSize, limit: pageSize, sort: '-create_at'};
-            const query = {};
-            Object.keys(queries).forEach(v => {
-                query[v] = new RegExp(queries[v]);
-            });
-            query.is_deleted = false;
-            return model.find(query, '', options).lean();
+            queries.is_deleted = false;
+            return model.find(queries, '', options).lean();
         },
 
         getCountByQuery(queries = {}) {
