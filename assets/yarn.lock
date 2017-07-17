@@ -7299,9 +7299,9 @@ yargs@~3.10.0:
     decamelize "^1.0.0"
     window-size "0.1.0"
 
-zk-tookit@^0.0.19:
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/zk-tookit/-/zk-tookit-0.0.19.tgz#d886b1a2e26d0c8e6faa594734c1c74d0065d7ad"
+zk-tookit@^0.0.25:
+  version "0.0.25"
+  resolved "https://registry.yarnpkg.com/zk-tookit/-/zk-tookit-0.0.25.tgz#fd5284f67198c98f917f65710bd3b854a9d8dfc7"
   dependencies:
     docdash "^0.4.0"
     jsdoc "^3.4.3"

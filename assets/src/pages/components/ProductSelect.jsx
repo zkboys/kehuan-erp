@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Modal} from 'antd';
 import {ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
+import {formatCurrency} from 'zk-tookit/utils';
 import {units} from '../components/UnitSelect';
 import {hasPermission} from '../../commons';
 
@@ -63,7 +64,7 @@ export default class extends Component {
             key: 'unitPrice',
             render(text, record) {
                 const u = units.find(item => item.code === record.unit);
-                if (u) return `${text}元/${u.shortName}`;
+                if (u) return `${formatCurrency(text)}/${u.shortName}`;
                 return text;
             },
         },
@@ -82,7 +83,7 @@ export default class extends Component {
             dataIndex: 'singleUnitPrice',
             key: 'singleUnitPrice',
             render(text) {
-                return `${text}元`;
+                return `${formatCurrency(text)}`;
             },
         },
         {title: '备注', dataIndex: 'remark', key: 'remark'},

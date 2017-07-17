@@ -6,7 +6,7 @@ const baseController = getBaseController(OrderService);
 module.exports = Object.assign({}, baseController, {
     getByPage(req, res, next){
         const query = {};
-        ['name'].forEach(v => {
+        ['status', 'orderNum'].forEach(v => {
             const value = req.query[v];
             if (value) {
                 query[v] = value;

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SchemaModel = new Schema({
+    orderNum: String, // 订单编号
     status: {type: String}, // 订单状态： 0 审核中 1 审核通过 2 驳回 3 作废 4 生产中 5 配送中 6 已完成
     totalPrice: {type: Number}, // 订单总价
     sendUserId: {type: String}, // 发起人

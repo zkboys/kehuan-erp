@@ -6,7 +6,7 @@ import pageRoutes from '../../page-routes';
 import './style.less';
 
 export class LayoutComponent extends Component {
-    state = {}
+    state = {};
 
     componentWillReceiveProps(/* nextProps */) {
     }
@@ -53,7 +53,7 @@ export class LayoutComponent extends Component {
                 <h1 styleName="title">home123</h1>
                 <Button onClick={this.handleGetMenus}>重新获取菜单</Button>
                 {
-                    pageRoutes.map(route => <div key={route.path}><Link to={route.path}>{route.path}</Link></div>)
+                    pageRoutes.map((route, index) => <div key={index}><Link to={route.path}>{route.path}</Link></div>)
                 }
             </PageContent>
         );

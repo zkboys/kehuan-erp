@@ -7,6 +7,12 @@ const OrganizationModel = require('../models').Organization;
 exports.getAllOrganizations = function () {
     return OrganizationModel.find().lean();
 };
+
+exports.getByIds = function (ids) {
+    return OrganizationModel.find({'_id': {'$in': ids}}).lean();
+};
+
+
 /**
  * 更新全部
  * @param newOrganizations

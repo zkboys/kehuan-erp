@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {Form, Input, InputNumber, Button, message, DatePicker, Table} from 'antd';
 import {PageContent, FormItemLayout, Operator} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
+import {formatCurrency} from 'zk-tookit/utils';
+import moment from 'moment';
 import {units} from '../components/UnitSelect';
 import ProductSelect from '../components/ProductSelect';
 
@@ -133,6 +135,10 @@ export default class OrderSend extends Component {
             const list = res || [];
             this.setState({organizations: list});
         });
+        // TODO 生成规则
+        const orderNum = moment().format('YYYYMMDDHHmmss');
+        const data = {orderNum};
+        this.setState({data});
     }
 
     setTotalPrice(dataSource) {
@@ -203,7 +209,7 @@ export default class OrderSend extends Component {
     }
 
     render() {
-        const {form: {getFieldDecorator}, $currentLoginUser} = this.props;
+        const {form: {getFieldDecorator, getFieldValue}, $currentLoginUser} = this.props;
         const {loading, data = {}, dataSource, showProductSelect} = this.state;
         const currentLoginUserId = $currentLoginUser.id;
         const currentOrgId = $currentLoginUser.org_id;
@@ -229,23 +235,37 @@ export default class OrderSend extends Component {
                     {getFieldDecorator('sendOrgId', {initialValue: currentOrgId})(<Input type="hidden"/>)}
                     {getFieldDecorator('receiveOrgId', {initialValue: parentOrg._id})(<Input type="hidden"/>)}
                     <FormItemLayout
-                        label="订单总价"
+                        label="订单编号"
                         labelSpaceCount={labelSpaceCount}
-                        float
-                        tip="元"
-                        tipWidth={50}
                         style={{width: 300}}
                     >
-                        {getFieldDecorator('totalPrice', {
-                            initialValue: data.totalPrice,
+                        {getFieldDecorator('orderNum', {
+                            initialValue: data.orderNum,
+                            rules: [
+                                {required: true, message: '请输入订单编号'},
+                            ],
                         })(
                             <Input disabled/>
                         )}
                     </FormItemLayout>
                     <FormItemLayout
+                        label="订单总价"
+                        labelSpaceCount={labelSpaceCount}
+                        style={{width: 300}}
+                    >
+                        {getFieldDecorator('totalPrice', {
+                            initialValue: data.totalPrice,
+                            rules: [
+                                {required: true, message: '请选择商品'},
+                            ],
+                        })(
+                            <Input disabled type="hidden"/>
+                        )}
+                        {formatCurrency(getFieldValue('totalPrice') || 0)}
+                    </FormItemLayout>
+                    <FormItemLayout
                         label="出货日期"
                         labelSpaceCount={labelSpaceCount}
-                        float
                         style={{width: 300}}
                     >
                         {getFieldDecorator('deliveryTime', {
@@ -267,6 +287,9 @@ export default class OrderSend extends Component {
                     >
                         {getFieldDecorator('receiveOrgName', {
                             initialValue: parentOrg.name,
+                            rules: [
+                                {required: true, message: '请选择接收部门'},
+                            ],
                         })(
                             <Input disabled/>
                         )}
