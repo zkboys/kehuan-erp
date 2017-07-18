@@ -5,8 +5,10 @@ const getBaseService = require('./base-service');
 
 module.exports = Object.assign({}, getBaseService(OrderProxy), {
     async getByPage(currentPage = 1, pageSize = 10, queries = {}) {
+
         const results = await OrderProxy.getByPage(currentPage, pageSize, queries);
         const totalCount = await OrderProxy.getCountByQuery(queries);
+
         const sendUserIds = results.map(item => item.sendUserId);
         const sendOrgIds = results.map(item => item.sendOrgId);
         const receiveOrgIds = results.map(item => item.receiveOrgId);
@@ -15,6 +17,7 @@ module.exports = Object.assign({}, getBaseService(OrderProxy), {
         const sendOrgs = await OrgProxy.getByIds(sendOrgIds);
         const receiveUsers = await UserProxy.getUsersByIds(receiveUserIds);
         const receiveOrgs = await OrgProxy.getByIds(receiveOrgIds);
+
         const resu = results.map(item => {
             const sendUser = sendUsers.find(i => String(i._id) === item.sendUserId);
             const sendOrg = sendOrgs.find(i => String(i._id) === item.sendOrgId);

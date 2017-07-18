@@ -103,6 +103,18 @@ exports.getUserMenus = async function (user) {
     return await MenuProxy.getByUser(user);
 };
 
+exports.getPermissionsById = async function (userId) {
+    const user = await UserProxy.getUserById(userId);
+    const role = await RoleProxy.getRoleById(user.role_id);
+    user.permissions = role.permissions;
+    const menus = await MenuProxy.getByUser(user);
+    return menus.map(item => {
+        if (item.type === '0') return item.key;
+        if (item.type === '1') return item.code;
+        return null;
+    });
+};
+
 exports.getUserById = async function (userId) {
     return await UserProxy.getUserById(userId);
 };

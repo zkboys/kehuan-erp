@@ -1,6 +1,7 @@
 const config = require('../config');
 const UserProxy = require('../proxy/user');
 const RoleProxy = require('../proxy/role');
+const userService = require('../service/user');
 
 /**
  * 需要登录
@@ -87,11 +88,8 @@ exports.authUser = async function (req, res, next) {
     }
     try {
         const user = await UserProxy.getUserById(user_id);
-        const role = await RoleProxy.getRoleById(user.role_id);
-        if (role) {
-            user.permissions = role.permissions;
-        }
 
+        user.permissions = await userService.getPermissionsById(user_id);
         req.session.lastVisitAt = new Date().getTime();
         res.locals.current_user = req.session.user = user;
         return next();

@@ -2,20 +2,24 @@ const controllerDecorator = require('./controller-decorator');
 const config = require('../config');
 const authMiddleWare = require('../middlewares/auth');
 const userService = require('../service/user');
+const roleService = require('../service/role');
 
 exports.login = controllerDecorator(async function (req, res, next) {
     const loginName = req.body.userName;
     const pass = req.body.password;
 
     const user = await userService.getUserByLoginNameAndPass(loginName, pass);
+    const role = await roleService.getRoleById(user.role_id);
+    user.permissions = role.permissions;
+    // 根据用户permissions获取菜单
     const menus = await userService.getUserMenus(user);
+
     user.permissions = menus.map(item => {
         if (item.type === '0') return item.key;
         if (item.type === '1') return item.code;
         return null;
     });
     const refer = req.session._loginReferer || '/';
-
     req.session.destroy();
     authMiddleWare.generateUserCookie(user, res);
 

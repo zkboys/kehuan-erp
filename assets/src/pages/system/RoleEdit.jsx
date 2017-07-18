@@ -69,6 +69,7 @@ export default class SystemRoleEdit extends Component {
         form.validateFields((err, values) => {
             if (!err) {
                 values.permissions = this.state.checkedKeys;
+                values.status = values.status ? '1' : '0';
                 let submitAjax = isAdd ? $ajax.post : $ajax.put;
                 const successTip = isAdd ? '添加成功' : '修改成功';
                 this.setState({loading: true});
@@ -134,7 +135,7 @@ export default class SystemRoleEdit extends Component {
                                     style={{maxWidth: 300}}
                                 >
                                     {getFieldDecorator('status', {
-                                        initialValue: role.status === '0',
+                                        initialValue: role.status === '1',
                                         valuePropName: 'checked',
                                         rules: [
                                             {required: true, message: '请选择状态！'},

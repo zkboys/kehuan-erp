@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Link} from 'react-router';
 import {Operator, ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {formatCurrency} from 'zk-tookit/utils';
@@ -67,7 +68,14 @@ export default class OrderList extends Component {
      });
      * */
     columns = [
-        {title: '订单编号', width: 180, dataIndex: 'orderNum'},
+        {
+            title: '订单编号',
+            width: 120,
+            dataIndex: 'orderNum',
+            render(text) {
+                return <Link to="/orders/detail/:id">{text}</Link>;
+            },
+        },
         {
             title: '订单总价',
             width: 100,
@@ -102,7 +110,7 @@ export default class OrderList extends Component {
         {title: '驳回原因', width: 150, dataIndex: 'rejectReason'},
         {title: '作废原因', width: 150, dataIndex: 'destroyReason'},
         // {title: '操作历史', dataIndex: 'operatorHistory', key: 'operatorHistory'},
-        {title: '备注', width: 100, dataIndex: 'remark'},
+        {title: '备注', dataIndex: 'remark'},
         {
             title: '状态',
             width: 60,
@@ -119,50 +127,102 @@ export default class OrderList extends Component {
             width: 200,
             fixed: 'right',
             key: 'operator',
-            render: (/* text, record */) => {
-                const items = [
-                    {
-                        label: '审核通过',
-                        permission: 'ORDER_PASS',
-                        confirm: {
-                            title: '您确定要审核通过此订单？',
-                            onConfirm: () => {
-                                // TODO
-                            },
+            render: (text, record) => {
+                const pass = {
+                    label: '审核通过',
+                    permission: 'ORDER_PASS',
+                    confirm: {
+                        title: '您确定要审核通过此订单？',
+                        onConfirm: () => {
+                            this.props.$ajax.put('/orders/pass', {id: record._id}).then(() => {
+                                this.handleSearch(this.state.params);
+                            });
                         },
                     },
-                    {
-                        label: '驳回',
-                        permission: 'ORDER_REJECT',
-                        onClick: () => {
-                            // TODO
-                        },
+                };
+                const reject = {
+                    type: 'prompt',
+                    label: '驳回',
+                    permission: 'ORDER_REJECT',
+                    title: '驳回原因',
+                    okText: '驳回',
+                    inputProps: {
+                        rows: 3,
+                        placeholder: '请输入驳回原因',
                     },
-                    {
-                        label: '作废',
-                        permission: 'ORDER_DESTROY',
-                        onClick: () => {
-                            // TODO
-                        },
+                    decorator: {
+                        rules: [
+                            {required: true, message: '请输入驳回原因！'},
+                        ],
                     },
-                    {
-                        label: '传递',
-                        permission: 'ORDER_RESEND',
-                        confirm: {
-                            title: '您确定要传递此订单给上级部门？',
-                            onConfirm: () => {
-                                // TODO
-                            },
-                        },
+                    onConfirm: value => {
+                        // TODO
+                        console.log(value);
                     },
-                ];
+                };
+                const destroy = {
+                    type: 'prompt',
+                    label: '作废',
+                    permission: 'ORDER_DESTROY',
+                    title: '作废原因',
+                    okText: '作废',
+                    inputProps: {
+                        rows: 3,
+                        placeholder: '请输入作废原因',
+                    },
+                    decorator: {
+                        rules: [
+                            {required: true, message: '请输入作废原因！'},
+                        ],
+                    },
+                    onConfirm: value => {
+                        // TODO
+                        console.log(value);
+                    },
+                };
+                const update = {
+                    label: '修改',
+                    permission: 'ORDER_UPDATE',
+                    onClick: value => {
+                        // TODO
+                        console.log(value);
+                    },
+                };
 
+                const {status, receiveOrgId, sendOrgId} = record;
+                const currentLoginUser = this.props.$currentLoginUser || {};
+                const currentLoginUserOrgId = currentLoginUser.org_id;
+                let items = [];
+                // 待审核
+                if (status === '0' && receiveOrgId === currentLoginUserOrgId) {
+                    items = [
+                        pass,
+                        reject,
+                        destroy,
+                    ];
+                }
+                // 审核通过
+                if (status === '1' && receiveOrgId === currentLoginUserOrgId) {
+                    items = [
+                        reject,
+                        destroy,
+                    ];
+                }
+                // 驳回
+                if (status === '2' && sendOrgId === currentLoginUserOrgId) {
+                    items = [
+                        update,
+                        destroy,
+                    ];
+                }
                 return (<Operator items={items} hasPermission={hasPermission}/>);
-            },
+            }
+            ,
         },
     ];
 
     handleSearch = (params) => {
+        this.setState({params});
         return this.props.$ajax.get('/orders', params)
             .then(res => {
                 this.setState({
@@ -188,7 +248,7 @@ export default class OrderList extends Component {
                 total={total}
                 tableProps={{
                     scroll: {
-                        x: 1500,
+                        x: 1800,
                     },
                 }}
             />
