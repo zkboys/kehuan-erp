@@ -7,13 +7,15 @@ import moment from 'moment';
 import {units} from '../components/UnitSelect';
 import ProductSelect from '../components/ProductSelect';
 
-export const PAGE_ROUTE = '/orders/send';
+export const PAGE_ROUTE = '/orders/send(/+edit/:id)';
 
 @ajax()
 @Form.create()
 export default class OrderSend extends Component {
     state = {
         loading: false,
+        isAdd: true,
+        isDetail: false,
         data: {},
         dataSource: [],
         organizations: [],
@@ -67,6 +69,8 @@ export default class OrderSend extends Component {
             dataIndex: 'count',
             key: 'count',
             render: (text, record) => {
+                const {isDetail} = this.state;
+                if (isDetail) return text;
                 return (
                     <InputNumber
                         value={text}
@@ -87,9 +91,9 @@ export default class OrderSend extends Component {
             key: 'total',
             render: (text, record) => {
                 const {singleUnit, count = 0} = record;
-                const value = singleUnit * count;
+                const value = singleUnit * 10000 * count; // 避免js精度问题
                 const u = units.find(item => item.code === record.unit);
-                if (u) return `${value}${u.shortName}`;
+                if (u) return `${value / 10000}${u.shortName}`;
                 return value;
             },
         },
@@ -99,14 +103,15 @@ export default class OrderSend extends Component {
             key: 'totalPrice',
             render: (text, record) => {
                 const {singleUnit, unitPrice, count = 0} = record;
-                const value = singleUnit * count * unitPrice;
-                return `${value}元`;
+                const value = singleUnit * 10000 * count * unitPrice * 100;
+                return `${value / 1000000}元`;
             },
         },
         {
             title: '操作',
             key: 'operator',
             render: (text, record) => {
+                if (this.state.isDetail) return '';
                 const {_id: id, name} = record;
                 const items = [
                     {
@@ -131,14 +136,30 @@ export default class OrderSend extends Component {
     ];
 
     componentWillMount() {
-        this.props.$ajax.get('/system/organizations').then(res => {
+        const {id} = this.props.params;
+        const {$ajax, actions} = this.props;
+        let isDetail = false;
+        if (this.props.location.query && this.props.location.query.detail === 'true') {
+            isDetail = true;
+            this.setState({isDetail});
+        }
+        if (id) {
+            this.setState({isAdd: false});
+            $ajax.get(`/orders/${id}`).then(res => {
+                this.setState({data: res, dataSource: res.products});
+            });
+        } else {
+            // TODO 生成规则
+            const orderNum = moment().format('YYYYMMDDHHmmss');
+            const data = {orderNum};
+            this.setState({data, isAdd: true});
+        }
+        $ajax.get('/system/organizations').then(res => {
             const list = res || [];
             this.setState({organizations: list});
         });
-        // TODO 生成规则
-        const orderNum = moment().format('YYYYMMDDHHmmss');
-        const data = {orderNum};
-        this.setState({data});
+
+        actions.setPageTitle('查看订单详情');
     }
 
     setTotalPrice(dataSource) {
@@ -166,11 +187,13 @@ export default class OrderSend extends Component {
                     item.totalPrice = singleUnit * count * unitPrice;
                     item.total = singleUnit * count;
                 });
+                const {isAdd} = this.state;
                 const successTip = '订单发起成功';
+                const submitAjax = isAdd ? $ajax.post : $ajax.put;
 
                 this.setState({loading: true});
 
-                $ajax.post('/orders', values).then(() => {
+                submitAjax('/orders', values).then(() => {
                     message.success(successTip, 1.5, () => router.push('/orders'));
                 }).catch(() => {
                     this.setState({loading: false});
@@ -208,19 +231,36 @@ export default class OrderSend extends Component {
         }
     }
 
+    getReceiveOrgName = () => {
+        const {data, organizations} = this.state;
+        if (data && data.receiveOrgId && organizations && organizations.length) {
+            const org = organizations.find(item => item._id === data.receiveOrgId);
+            if (org) return org.name;
+        } else {
+            const currentOrgId = this.props.$currentLoginUser.org_id;
+            const parentOrg = this.getParentOrg(currentOrgId) || {};
+            if (parentOrg) return parentOrg.name;
+        }
+    };
+
     render() {
         const {form: {getFieldDecorator, getFieldValue}, $currentLoginUser} = this.props;
-        const {loading, data = {}, dataSource, showProductSelect} = this.state;
+        const {loading, data = {}, dataSource, showProductSelect, isDetail} = this.state;
         const currentLoginUserId = $currentLoginUser.id;
         const currentOrgId = $currentLoginUser.org_id;
         const parentOrg = this.getParentOrg(currentOrgId) || {};
+        const receiveOrgName = this.getReceiveOrgName();
         // receiveOrgId 默认为上级部门 parentOrg
         const labelSpaceCount = 4;
         return (
             <PageContent>
-                <div style={{marginBottom: 8}}>
-                    <Button type="primary" onClick={this.handleAddProduct}>选择产品</Button>
-                </div>
+                {
+                    !isDetail ?
+                        <div style={{marginBottom: 8}}>
+                            <Button type="primary" onClick={this.handleAddProduct}>选择产品</Button>
+                        </div>
+                        : null
+                }
                 <Form onSubmit={this.handleSubmit}>
                     <Table
                         size="small"
@@ -230,10 +270,11 @@ export default class OrderSend extends Component {
                         rowKey={record => record._id}
                         pagination={false}
                     />
+                    {data._id ? getFieldDecorator('_id', {initialValue: data._id})(<Input type="hidden"/>) : null}
                     {getFieldDecorator('status', {initialValue: 0})(<Input type="hidden"/>)}
                     {getFieldDecorator('sendUserId', {initialValue: currentLoginUserId})(<Input type="hidden"/>)}
                     {getFieldDecorator('sendOrgId', {initialValue: currentOrgId})(<Input type="hidden"/>)}
-                    {getFieldDecorator('receiveOrgId', {initialValue: parentOrg._id})(<Input type="hidden"/>)}
+                    {getFieldDecorator('receiveOrgId', {initialValue: data.receiveOrgId || parentOrg._id})(<Input type="hidden"/>)}
                     <FormItemLayout
                         label="订单编号"
                         labelSpaceCount={labelSpaceCount}
@@ -269,12 +310,12 @@ export default class OrderSend extends Component {
                         style={{width: 300}}
                     >
                         {getFieldDecorator('deliveryTime', {
-                            initialValue: data.deliveryTime,
+                            initialValue: moment(data.deliveryTime || new Date()),
                             rules: [
                                 {required: true, message: '请选择出货日期'},
                             ],
                         })(
-                            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" style={{width: '100%'}}/>
+                            <DatePicker showTime disabled={isDetail} format="YYYY-MM-DD HH:mm:ss" style={{width: '100%'}}/>
                         )}
                     </FormItemLayout>
 
@@ -286,7 +327,7 @@ export default class OrderSend extends Component {
                         style={{width: 600}}
                     >
                         {getFieldDecorator('receiveOrgName', {
-                            initialValue: parentOrg.name,
+                            initialValue: receiveOrgName,
                             rules: [
                                 {required: true, message: '请选择接收部门'},
                             ],
@@ -294,6 +335,38 @@ export default class OrderSend extends Component {
                             <Input disabled/>
                         )}
                     </FormItemLayout>
+
+                    {
+                        data.rejectReason ?
+                            <FormItemLayout
+                                label="驳回原因"
+                                labelSpaceCount={labelSpaceCount}
+                                style={{width: 600}}
+                            >
+                                {getFieldDecorator('rejectReason', {
+                                    initialValue: data.rejectReason,
+                                })(
+                                    <Input style={{height: 100}} disabled type="textarea"/>
+                                )}
+                            </FormItemLayout>
+                            : null
+                    }
+
+                    {
+                        data.destroyReason ?
+                            <FormItemLayout
+                                label="作废原因"
+                                labelSpaceCount={labelSpaceCount}
+                                style={{width: 600}}
+                            >
+                                {getFieldDecorator('destroyReason', {
+                                    initialValue: data.destroyReason,
+                                })(
+                                    <Input style={{height: 100}} disabled type="textarea"/>
+                                )}
+                            </FormItemLayout>
+                            : null
+                    }
 
                     <FormItemLayout
                         label="备注"
@@ -303,26 +376,32 @@ export default class OrderSend extends Component {
                         {getFieldDecorator('remark', {
                             initialValue: data.remark,
                         })(
-                            <Input style={{height: 100}} type="textarea" placeholder="请输入备注"/>
+                            <Input style={{height: 100}} disabled={isDetail} type="textarea" placeholder="请输入备注"/>
                         )}
                     </FormItemLayout>
 
-                    <div style={{paddingLeft: (labelSpaceCount + 2) * 12}}>
-                        <Button
-                            style={{marginRight: 8}}
-                            loading={loading}
-                            type="primary"
-                            onClick={this.handleSubmit}
-                        >
-                            提交
-                        </Button>
-                        <Button
-                            type="ghost"
-                            onClick={this.handleReset}
-                        >
-                            重置
-                        </Button>
-                    </div>
+                    {
+                        !isDetail ?
+                            <FormItemLayout
+                                labelSpaceCount={labelSpaceCount}
+                            >
+                                <Button
+                                    style={{marginRight: 8}}
+                                    loading={loading}
+                                    type="primary"
+                                    onClick={this.handleSubmit}
+                                >
+                                    提交
+                                </Button>
+                                <Button
+                                    type="ghost"
+                                    onClick={this.handleReset}
+                                >
+                                    重置
+                                </Button>
+                            </FormItemLayout>
+                            : null
+                    }
                 </Form>
                 <ProductSelect
                     visible={showProductSelect}
@@ -333,3 +412,5 @@ export default class OrderSend extends Component {
         );
     }
 }
+
+export const mapStateToProps = (state) => ({...state.frame});

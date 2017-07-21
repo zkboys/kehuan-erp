@@ -24,6 +24,7 @@ export default class TreeEdit extends Component {
         onSubmit: PropTypes.func.isRequired,
         onAddTopNode: PropTypes.func.isRequired,
         onAddSubNode: PropTypes.func.isRequired,
+        onReset: PropTypes.func,
     };
 
     handleAddNewNode = (type) => {
@@ -100,7 +101,12 @@ export default class TreeEdit extends Component {
     };
 
     handleReset = () => {
-        this.props.form.resetFields();
+        const {onReset, form} = this.props;
+        if (onReset) {
+            onReset();
+        } else {
+            form.resetFields();
+        }
     };
 
     handleDelete = () => {

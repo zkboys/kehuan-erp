@@ -82,6 +82,9 @@ router.get('/api/orders/:id', userRequired, order.getById);
 router.post('/api/orders', userRequired, permission('ORDER_ADD'), order.add);
 router.put('/api/orders', permission('ORDER_UPDATE'), userRequired, order.update);
 router.put('/api/orders/pass', permission('ORDER_PASS'), userRequired, order.pass);
+router.put('/api/orders/complete', permission('ORDER_COMPLETE'), userRequired, order.complete);
+router.put('/api/orders/reject', permission('ORDER_REJECT'), userRequired, order.reject);
+router.put('/api/orders/destroy', permission('ORDER_DESTROY'), userRequired, order.destroy);
 router.delete('/api/orders/:id', userRequired, permission('ORDER_DELETE'), order.deleteById);
 // routes end 代码生成注释，这个注释不要删除！！！
 

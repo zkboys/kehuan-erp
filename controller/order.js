@@ -36,4 +36,30 @@ module.exports = Object.assign({}, baseController, {
         return res.send(or);
     }),
 
+    complete: controllerDecorator(async(req, res, next) => {
+        const id = req.body.id;
+        const order = await OrderService.getById(id);
+        order.status = '6';
+        const or = await OrderService.update(order);
+        return res.send(or);
+    }),
+
+    reject: controllerDecorator(async(req, res, next) => {
+        const {id, rejectReason} = req.body;
+        const order = await OrderService.getById(id);
+        order.status = '2';
+        order.rejectReason = rejectReason;
+        const or = await OrderService.update(order);
+        return res.send(or);
+    }),
+
+    destroy: controllerDecorator(async(req, res, next) => {
+        const {id, destroyReason} = req.body;
+        const order = await OrderService.getById(id);
+        order.status = '3';
+        order.destroyReason = destroyReason;
+        const or = await OrderService.update(order);
+        return res.send(or);
+    }),
+
 });

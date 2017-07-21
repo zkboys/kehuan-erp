@@ -74,6 +74,12 @@ export default class extends Component {
         }
     };
 
+    handleReset = () => {
+        const {selectedKey, dataSource} = this.state;
+        const selectedNode = dataSource.find(item => item.key === selectedKey);
+        this.handleTreeSelect(selectedNode);
+    };
+
     handleSubmit = (values) => {
         const {dataSource} = this.state;
         const {$ajax} = this.props;
@@ -144,6 +150,7 @@ export default class extends Component {
                     onSubmit={this.handleSubmit}
                     onAddTopNode={this.handleAddNewNode}
                     onAddSubNode={this.handleAddNewNode}
+                    onReset={this.handleReset}
                 >
                     <Form onSubmit={this.handleSubmit} style={{marginTop: 12}}>
                         {getFieldDecorator('key')(<Input type="hidden"/>)}

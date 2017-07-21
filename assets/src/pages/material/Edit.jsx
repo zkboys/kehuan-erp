@@ -1,54 +1,32 @@
 import React, {Component} from 'react';
-import {Form, Input, Button, message} from 'antd';
+import PropTypes from 'prop-types';
+import {Form, Input, Button, InputNumber} from 'antd';
 import {PageContent, FormItemLayout} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
-import UnitSelect from '../components/UnitSelect';
-
-export const PAGE_ROUTE = '/materials/+edit/:id';
+import UnitSelect, {units} from '../components/UnitSelect';
 
 @ajax()
 @Form.create()
 export default class MaterialEdit extends Component {
     state = {
         loading: false,
-        isAdd: true,
-        data: {},
     };
 
-    componentWillMount() {
-        const {id} = this.props.params;
-        const {$ajax} = this.props;
-        if (id === ':id') {
-            this.setState({isAdd: true});
-        } else {
-            this.setState({isAdd: false});
-            $ajax.get(`/materials/${id}`).then(res => {
-                this.setState({
-                    data: res,
-                });
-            });
-        }
-    }
+    static propTypes = {
+        data: PropTypes.object.isRequired,
+        onSubmit: PropTypes.func.isRequired,
+    };
 
     handleSubmit = (e) => {
         e.preventDefault();
-        const {isAdd, loading} = this.state;
-        const {form, $ajax, router} = this.props;
+        const {loading} = this.state;
+        const {form, onSubmit} = this.props;
 
         if (loading) return;
 
         form.validateFields((err, values) => {
             if (!err) {
-                const submitAjax = isAdd ? $ajax.post : $ajax.put;
-                const successTip = isAdd ? '添加成功' : '修改成功';
-
-                this.setState({loading: true});
-
-                submitAjax('/materials', values).then(() => {
-                    message.success(successTip, 1.5, () => router.push('/materials'));
-                }).catch(() => {
-                    this.setState({loading: false});
-                });
+                onSubmit(values);
             }
         });
     };
@@ -58,21 +36,26 @@ export default class MaterialEdit extends Component {
     };
 
     render() {
-        const {form: {getFieldDecorator}} = this.props;
-        const {loading, isAdd, data = {}} = this.state;
-        const title = isAdd ? '添加XXX' : '修改XXX';
+        const {form: {getFieldDecorator, getFieldValue}, data = {}} = this.props;
+        const {loading} = this.state;
+        const isAdd = !(data && data._id);
+        const labelSpaceCount = 3;
+        const tipWidth = 50;
 
-        const labelSpaceCount = 4;
-
+        // 获取单位
+        const unit = getFieldValue('unit');
+        const u = units.find(item => item.code === unit);
+        const unitName = u ? u.shortName : '';
         return (
             <PageContent>
-                <h1 style={{textAlign: 'center'}}>{title}</h1>
                 <Form onSubmit={this.handleSubmit}>
                     {!isAdd ? getFieldDecorator('_id', {initialValue: data._id})(<Input type="hidden"/>) : null}
+
                     <FormItemLayout
                         label="名称"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '50%'}}
                     >
                         {getFieldDecorator('name', {
                             initialValue: data.name,
@@ -83,10 +66,12 @@ export default class MaterialEdit extends Component {
                             <Input placeholder="请输入名称"/>
                         )}
                     </FormItemLayout>
+
                     <FormItemLayout
                         label="规格"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '50%'}}
                     >
                         {getFieldDecorator('spec', {
                             initialValue: data.spec,
@@ -101,12 +86,13 @@ export default class MaterialEdit extends Component {
                     <FormItemLayout
                         label="单位"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '50%'}}
                     >
                         {getFieldDecorator('unit', {
-                            initialValue: data.unit,
+                            initialValue: data.unit || 'squareMetre',
                             rules: [
-                                {required: true, message: '请输入单位！'},
+                                {required: true, message: '请选择单位！'},
                             ],
                         })(
                             <UnitSelect/>
@@ -116,7 +102,10 @@ export default class MaterialEdit extends Component {
                     <FormItemLayout
                         label="单价"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        float
+                        style={{width: '50%'}}
+                        tip={`元/${unitName || '㎡'}`}
+                        tipWidth={tipWidth}
                     >
                         {getFieldDecorator('unitPrice', {
                             initialValue: data.unitPrice,
@@ -124,30 +113,44 @@ export default class MaterialEdit extends Component {
                                 {required: true, message: '请输入单价！'},
                             ],
                         })(
-                            <Input placeholder="请输入单价"/>
+                            <InputNumber
+                                style={{width: '100%'}}
+                                min={0}
+                                step={0.01}
+                                placeholder="请输入单价"
+                            />
                         )}
                     </FormItemLayout>
+
+                    <div style={{clear: 'both'}}/>
 
                     <FormItemLayout
                         label="备注"
                         labelSpaceCount={labelSpaceCount}
-                        style={{maxWidth: 300}}
+                        style={{width: '100%'}}
                     >
                         {getFieldDecorator('remark', {
                             initialValue: data.remark,
                             rules: [
-                                {required: true, message: '请输入备注！'},
+                                {required: false, message: '请输入备注！'},
                             ],
                         })(
-                            <Input type="textarea" placeholder="请输入备注"/>
+                            <Input
+                                style={{height: 100}}
+                                type="textarea"
+                                placeholder="请输入备注"
+                            />
                         )}
                     </FormItemLayout>
-                    <div>
+
+                    <FormItemLayout
+                        labelSpaceCount={labelSpaceCount}
+                    >
                         <Button
                             style={{marginRight: 8}}
                             loading={loading}
                             type="primary"
-                            htmlType="submit"
+                            onClick={this.handleSubmit}
                         >
                             提交
                         </Button>
@@ -157,7 +160,7 @@ export default class MaterialEdit extends Component {
                         >
                             重置
                         </Button>
-                    </div>
+                    </FormItemLayout>
                 </Form>
             </PageContent>
         );

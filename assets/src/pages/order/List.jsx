@@ -72,8 +72,8 @@ export default class OrderList extends Component {
             title: '订单编号',
             width: 120,
             dataIndex: 'orderNum',
-            render(text) {
-                return <Link to="/orders/detail/:id">{text}</Link>;
+            render(text, record) {
+                return <Link to={`/orders/send/+edit/${record._id}?detail=true`}>{text}</Link>;
             },
         },
         {
@@ -113,7 +113,7 @@ export default class OrderList extends Component {
         {title: '备注', dataIndex: 'remark'},
         {
             title: '状态',
-            width: 60,
+            width: 80,
             fixed: 'right',
             dataIndex: 'status',
             render(text) {
@@ -134,7 +134,7 @@ export default class OrderList extends Component {
                     confirm: {
                         title: '您确定要审核通过此订单？',
                         onConfirm: () => {
-                            this.props.$ajax.put('/orders/pass', {id: record._id}).then(() => {
+                            this.props.$ajax.put('/orders/pass', {id: record._id}, {successTip: '通过成功！'}).then(() => {
                                 this.handleSearch(this.state.params);
                             });
                         },
@@ -156,8 +156,10 @@ export default class OrderList extends Component {
                         ],
                     },
                     onConfirm: value => {
-                        // TODO
-                        console.log(value);
+                        const params = {id: record._id, rejectReason: value};
+                        this.props.$ajax.put('/orders/reject', params, {successTip: '驳回成功！'}).then(() => {
+                            this.handleSearch(this.state.params);
+                        });
                     },
                 };
                 const destroy = {
@@ -176,18 +178,33 @@ export default class OrderList extends Component {
                         ],
                     },
                     onConfirm: value => {
-                        // TODO
-                        console.log(value);
+                        const params = {id: record._id, destroyReason: value};
+                        this.props.$ajax.put('/orders/destroy', params, {successTip: '作废成功！'}).then(() => {
+                            this.handleSearch(this.state.params);
+                        });
                     },
                 };
                 const update = {
-                    label: '修改',
+                    label: '重新发起',
                     permission: 'ORDER_UPDATE',
-                    onClick: value => {
-                        // TODO
-                        console.log(value);
+                    onClick: () => {
+                        this.props.router.push(`/orders/send/+edit/${record._id}`);
                     },
                 };
+
+                const complete = {
+                    label: '完成',
+                    permission: 'ORDER_COMPLETE',
+                    confirm: {
+                        title: '您确定要完成此订单？',
+                        onConfirm: () => {
+                            this.props.$ajax.put('/orders/complete', {id: record._id}, {successTip: '订单已完成！'}).then(() => {
+                                this.handleSearch(this.state.params);
+                            });
+                        },
+                    },
+                };
+
 
                 const {status, receiveOrgId, sendOrgId} = record;
                 const currentLoginUser = this.props.$currentLoginUser || {};
@@ -197,6 +214,7 @@ export default class OrderList extends Component {
                 if (status === '0' && receiveOrgId === currentLoginUserOrgId) {
                     items = [
                         pass,
+                        complete,
                         reject,
                         destroy,
                     ];
@@ -204,6 +222,7 @@ export default class OrderList extends Component {
                 // 审核通过
                 if (status === '1' && receiveOrgId === currentLoginUserOrgId) {
                     items = [
+                        complete,
                         reject,
                         destroy,
                     ];

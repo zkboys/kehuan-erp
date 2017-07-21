@@ -232,7 +232,9 @@ export class LayoutComponent extends Component {
                             <Input style={{height: 100}} type="textarea" placeholder="请输入备注"/>
                         )}
                     </FormItemLayout>
-                    <div style={{paddingLeft: (labelSpaceCount + 2) * 12}}>
+                    <FormItemLayout
+                        labelSpaceCount={labelSpaceCount}
+                    >
                         <Button
                             style={{marginRight: 8}}
                             loading={loading}
@@ -247,7 +249,7 @@ export class LayoutComponent extends Component {
                         >
                             重置
                         </Button>
-                    </div>
+                    </FormItemLayout>
                 </Form>
             </PageContent>
         );
