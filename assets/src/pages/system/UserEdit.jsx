@@ -31,7 +31,6 @@ export default class SystemUserEdit extends Component {
                 const successTip = isAdd ? '添加成功' : '修改成功';
                 this.setState({loading: true});
                 submitAjax('/system/users', values).then(() => {
-                    router.push('/system/user');
                     message.success(successTip, 1.5, () => router.push('/system/user'));
                 }).finally(() => {
                     this.setState({loading: false});
