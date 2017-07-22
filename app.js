@@ -104,7 +104,7 @@ if (config.debug) {
         next();
     });
 } else {
-    app.use(csurf());
+    // app.use(csurf()); // 有问题
 
     app.use(function (req, res, next) {
         res.locals.csrf = req.csrfToken ? req.csrfToken() : '';
