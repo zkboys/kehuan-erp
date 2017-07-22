@@ -8,7 +8,6 @@ import {getFirstValue} from 'zk-tookit/utils/tree-utils';
 import {session} from 'zk-tookit/utils/storage';
 import {toLogin, getCurrentLoginUser} from '../commons';
 import connectComponent from '../redux/store/connect-component';
-import DomainSelect from '../pages/components/DomainSelect.jsx';
 
 @ajax()
 class LayoutComponent extends Component {
@@ -85,7 +84,6 @@ class LayoutComponent extends Component {
                 avatar: '',
             };
         const showNotice = false;
-        const showDomainSelect = false; // TODO: 根据user，判断是否需要显示切换域的功能
         return (
             <div className={`frame-header ${frameHeaderClass}`} style={style}>
                 <div className={`left-menu ${frameHeaderClass}`} style={style}>
@@ -111,21 +109,10 @@ class LayoutComponent extends Component {
                             </Popover>
                             : null
                     }
-                    <Link to="/system/profile">
-                        <div className="right-menu-item">
-                            <UserAvatar user={user}/>
-                            <span>{user.name}</span>
-                        </div>
-                    </Link>
-                    {
-                        showDomainSelect ?
-                            <div className="right-menu-item">
-                                <DomainSelect
-                                    style={{width: 150}}
-                                />
-                            </div>
-                            : null
-                    }
+                    <div className="right-menu-item">
+                        <UserAvatar user={user}/>
+                        <span>{user.name}</span>
+                    </div>
                     <Popconfirm
                         onVisibleChange={this.handleLogoutPopVisibleChange}
                         placement="bottomRight"
