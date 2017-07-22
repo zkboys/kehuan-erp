@@ -17,6 +17,7 @@ export default class LoginForm extends Component {
     static propTypes = {
         loading: PropTypes.bool,
         onSubmit: PropTypes.func,
+        oldPass: PropTypes.string,
     };
 
     handleSubmit = (e) => {
@@ -51,7 +52,7 @@ export default class LoginForm extends Component {
         if (reNewPass && reNewPass === oldPass) {
             return callback('新密码不与能原密码相同!');
         }
-        if (reNewPass && reNewPass === '123456') {
+        if (reNewPass && reNewPass === oldPass) {
             return callback('确认新密码不能与默认密码相同!');
         }
         callback();
@@ -70,7 +71,7 @@ export default class LoginForm extends Component {
         if (newPass === oldPass) {
             return callback('新密码不能原密码相同!');
         }
-        if (newPass === '123456') {
+        if (newPass === oldPass) {
             return callback('新密码不能与默认密码相同!');
         }
 
@@ -88,7 +89,7 @@ export default class LoginForm extends Component {
     }
 
     render() {
-        const {loading, hideOldPass} = this.props;
+        const {loading, hideOldPass, oldPass} = this.props;
         const {getFieldDecorator, getFieldsError, getFieldError, isFieldTouched} = this.props.form;
 
         // Only show error after a field is touched.
@@ -97,24 +98,22 @@ export default class LoginForm extends Component {
         const reNewPassError = isFieldTouched('reNewPass') && getFieldError('reNewPass');
         return (
             <Form onSubmit={this.handleSubmit}>
-                {
-                    !hideOldPass ?
-                        <FormItem
-                            validateStatus={oldPassError ? 'error' : ''}
-                            help={oldPassError || ''}
-                        >
-                            {getFieldDecorator('oldPass', {
-                                rules: [{required: true, message: '原密码不能为空！'}],
-                            })(
-                                <Input
-                                    prefix={<Icon type="lock" style={{fontSize: 13}}/>}
-                                    type="password"
-                                    placeholder="原密码"
-                                />
-                            )}
-                        </FormItem>
-                        : null
-                }
+                <FormItem
+                    style={{display: hideOldPass ? 'none' : 'block'}}
+                    validateStatus={oldPassError ? 'error' : ''}
+                    help={oldPassError || ''}
+                >
+                    {getFieldDecorator('oldPass', {
+                        initialValue: oldPass,
+                        rules: [{required: true, message: '原密码不能为空！'}],
+                    })(
+                        <Input
+                            prefix={<Icon type="lock" style={{fontSize: 13}}/>}
+                            type="password"
+                            placeholder="原密码"
+                        />
+                    )}
+                </FormItem>
                 <FormItem
                     validateStatus={newPassError ? 'error' : ''}
                     help={newPassError || ''}

@@ -112,7 +112,7 @@ class Login extends Component {
     };
 
     render() {
-        const {loading, errorMessage, showPasswordForm} = this.state;
+        const {loading, errorMessage, showPasswordForm, password} = this.state;
         return (
             <div styleName="root">
                 {
@@ -122,6 +122,7 @@ class Login extends Component {
                             <h3>您为首次登录，需要修改密码</h3>
                             <PasswordForm
                                 hideOldPass
+                                oldPass={password}
                                 loading={loading}
                                 onSubmit={this.handlePassSubmit}
                             />

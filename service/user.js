@@ -106,7 +106,7 @@ exports.getUserMenus = async function (user) {
 exports.getPermissionsById = async function (userId) {
     const user = await UserProxy.getUserById(userId);
     const role = await RoleProxy.getRoleById(user.role_id);
-    user.permissions = role.permissions;
+    user.permissions = role ? role.permissions : [];
     const menus = await MenuProxy.getByUser(user);
     return menus.map(item => {
         if (item.type === '0') return item.key;

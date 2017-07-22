@@ -10,7 +10,7 @@ exports.login = controllerDecorator(async function (req, res, next) {
 
     const user = await userService.getUserByLoginNameAndPass(loginName, pass);
     const role = await roleService.getRoleById(user.role_id);
-    user.permissions = role.permissions;
+    user.permissions = role ? role.permissions : [];
     // 根据用户permissions获取菜单
     const menus = await userService.getUserMenus(user);
 
