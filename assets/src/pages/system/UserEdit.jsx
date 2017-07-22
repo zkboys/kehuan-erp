@@ -75,7 +75,7 @@ export default class SystemUserEdit extends Component {
                                 validationRule.checkExistLoginName(user.loginName),
                             ],
                         })(
-                            <Input placeholder="请输入登录名"/>
+                            <Input placeholder="请输入登录名" disabled={!isAdd}/>
                         )}
                     </FormItem>
                     <FormItem
