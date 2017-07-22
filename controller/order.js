@@ -1,4 +1,5 @@
 const OrderService = require('../service/order');
+const ProductService = require('../service/product');
 const getBaseController = require('./base-controller');
 const controllerDecorator = require('./controller-decorator');
 
@@ -41,6 +42,25 @@ module.exports = Object.assign({}, baseController, {
         const order = await OrderService.getById(id);
         order.status = '6';
         const or = await OrderService.update(order);
+
+        // 更改库存
+        const products = or.products;
+        const ids = products.map(item => item._id);
+        const baseProducts = await ProductService.getByIds(ids);
+        if (baseProducts && baseProducts.length) {
+            for (let i = 0; i < baseProducts.length; i++) {
+                const basePro = baseProducts[i];
+                for (let j = 0; j < products.length; j++) {
+                    if (String(products[j]._id) === String(baseProducts[i]._id)) {
+                        basePro.stockCount = basePro.stockCount - products[j].count;
+                        basePro.stockTotal = (basePro.stockCount * basePro.singleUnit * 10000) / 10000;
+                        console.log(basePro);
+                        await ProductService.update(basePro);
+                    }
+                }
+            }
+        }
+
         return res.send(or);
     }),
 
@@ -61,5 +81,4 @@ module.exports = Object.assign({}, baseController, {
         const or = await OrderService.update(order);
         return res.send(or);
     }),
-
 });

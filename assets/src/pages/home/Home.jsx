@@ -1,8 +1,5 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router';
 import {PageContent} from 'zk-tookit/antd';
-import {Button} from 'antd';
-import pageRoutes from '../../page-routes';
 import './style.less';
 
 export class LayoutComponent extends Component {
@@ -22,39 +19,17 @@ export class LayoutComponent extends Component {
 
     componentWillMount() {
         const {actions} = this.props;
-        // actions.hidePageHeader();
+        actions.hidePageHeader();
         actions.hideSideBar();
-        actions.setPageTitle('自定义页面标题');
-        actions.setPageBreadcrumbs([
-            {
-                key: 'zidingyi',
-                path: '',
-                text: '自定义',
-                icon: 'cloud',
-            },
-            {
-                key: 'mianbaoxie',
-                path: '',
-                text: '面包屑',
-                icon: 'notification',
-            },
-            {
-                key: 'daohang',
-                path: '',
-                text: '导航',
-                icon: 'smile-o',
-            },
-        ]);
+
+        // 跳转到订单页面
+        this.props.router.push('/orders');
     }
 
     render() {
         return (
             <PageContent styleName="root">
-                <h1 styleName="title">home123</h1>
-                <Button onClick={this.handleGetMenus}>重新获取菜单</Button>
-                {
-                    pageRoutes.map((route, index) => <div key={index}><Link to={route.path}>{route.path}</Link></div>)
-                }
+                欢迎使用
             </PageContent>
         );
     }

@@ -70,6 +70,16 @@ export default class MaterialList extends Component {
                 return text;
             },
         },
+        {
+            title: '库存',
+            dataIndex: 'stock',
+            key: 'stock',
+            render(text, record) {
+                const u = units.find(item => item.code === record.unit);
+                if (u) return `${text} ${u.shortName}`;
+                return text;
+            },
+        },
         {title: '备注', dataIndex: 'remark', key: 'remark'},
         {
             title: '操作',

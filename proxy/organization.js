@@ -8,6 +8,11 @@ exports.getAllOrganizations = function () {
     return OrganizationModel.find().lean();
 };
 
+
+exports.getById = function (id) {
+    return OrganizationModel.findOne({'_id': id}).lean();
+};
+
 exports.getByIds = function (ids) {
     return OrganizationModel.find({'_id': {'$in': ids}}).lean();
 };

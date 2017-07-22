@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {Form, Input, InputNumber, Button, message, DatePicker, Table} from 'antd';
+import {Form, Input, InputNumber, Button, message, DatePicker, Table, Modal} from 'antd';
 import {PageContent, FormItemLayout, Operator} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {formatCurrency} from 'zk-tookit/utils';
 import moment from 'moment';
 import {units} from '../components/UnitSelect';
 import ProductSelect from '../components/ProductSelect';
+import {STOCK_THRESHOLD_COUNT} from '../../commons';
 
 export const PAGE_ROUTE = '/orders/send(/+edit/:id)';
 
@@ -62,6 +63,32 @@ export default class OrderSend extends Component {
             key: 'singleUnitPrice',
             render(text) {
                 return `${text}元`;
+            },
+        },
+        {
+            title: '库存总数',
+            dataIndex: 'stockCount',
+            key: 'stockCount',
+            render(text) {
+                if (text < STOCK_THRESHOLD_COUNT) {
+                    return <span style={{color: 'red'}}>{text}</span>;
+                }
+                return text;
+            },
+        },
+        {
+            title: '库存总量',
+            dataIndex: 'stockTotal',
+            key: 'stockTotal',
+            render(text, record) {
+                if (!text) return '';
+                let result = text;
+                const u = units.find(item => item.code === record.unit);
+                if (u) result = `${text}${u.shortName}`;
+                if (record.stockCount < STOCK_THRESHOLD_COUNT) {
+                    return <span style={{color: 'red'}}>{result}</span>;
+                }
+                return result;
             },
         },
         {
@@ -168,6 +195,17 @@ export default class OrderSend extends Component {
             return previous + (singleUnit * count * unitPrice);
         }, 0);
         this.props.form.setFieldsValue({totalPrice});
+        this.setAfterDiscountTotalPrice();
+    }
+
+    setAfterDiscountTotalPrice() {
+        setTimeout(() => {
+            const {form: {getFieldValue, setFieldsValue}} = this.props;
+            const totalPrice = getFieldValue('totalPrice');
+            const discount = getFieldValue('discount');
+            const afterDiscountTotalPrice = totalPrice - discount;
+            setFieldsValue({afterDiscountTotalPrice});
+        });
     }
 
     handleSubmit = (e) => {
@@ -177,6 +215,12 @@ export default class OrderSend extends Component {
 
         if (loading) return;
 
+        if (!dataSource || !dataSource.length) {
+            return Modal.error({
+                title: '提示',
+                content: '请添加产品！订单不可以不包含任何产品！',
+            });
+        }
         form.validateFields((err, values) => {
             if (!err) {
                 values.sendTime = new Date();
@@ -251,7 +295,8 @@ export default class OrderSend extends Component {
         const parentOrg = this.getParentOrg(currentOrgId) || {};
         const receiveOrgName = this.getReceiveOrgName();
         // receiveOrgId 默认为上级部门 parentOrg
-        const labelSpaceCount = 4;
+        const labelSpaceCount = 6;
+        const itemWidth = 400;
         return (
             <PageContent>
                 {
@@ -261,15 +306,17 @@ export default class OrderSend extends Component {
                         </div>
                         : null
                 }
+
+                <Table
+                    size="small"
+                    style={{marginBottom: 16}}
+                    dataSource={dataSource}
+                    columns={this.columns}
+                    rowKey={record => record._id}
+                    pagination={false}
+                />
+
                 <Form onSubmit={this.handleSubmit}>
-                    <Table
-                        size="small"
-                        style={{marginBottom: 16}}
-                        dataSource={dataSource}
-                        columns={this.columns}
-                        rowKey={record => record._id}
-                        pagination={false}
-                    />
                     {data._id ? getFieldDecorator('_id', {initialValue: data._id})(<Input type="hidden"/>) : null}
                     {getFieldDecorator('status', {initialValue: 0})(<Input type="hidden"/>)}
                     {getFieldDecorator('sendUserId', {initialValue: currentLoginUserId})(<Input type="hidden"/>)}
@@ -278,7 +325,8 @@ export default class OrderSend extends Component {
                     <FormItemLayout
                         label="订单编号"
                         labelSpaceCount={labelSpaceCount}
-                        style={{width: 300}}
+                        float
+                        style={{width: itemWidth}}
                     >
                         {getFieldDecorator('orderNum', {
                             initialValue: data.orderNum,
@@ -292,22 +340,67 @@ export default class OrderSend extends Component {
                     <FormItemLayout
                         label="订单总价"
                         labelSpaceCount={labelSpaceCount}
-                        style={{width: 300}}
+                        float
+                        style={{width: itemWidth}}
                     >
                         {getFieldDecorator('totalPrice', {
                             initialValue: data.totalPrice,
                             rules: [
-                                {required: true, message: '请选择商品'},
+                                {required: true, message: '请输入订单总价'},
                             ],
                         })(
                             <Input disabled type="hidden"/>
                         )}
                         {formatCurrency(getFieldValue('totalPrice') || 0)}
                     </FormItemLayout>
+                    <div style={{clear: 'both'}}/>
+                    <FormItemLayout
+                        label="优惠金额"
+                        labelSpaceCount={labelSpaceCount}
+                        float
+                        style={{width: itemWidth}}
+                    >
+                        {getFieldDecorator('discount', {
+                            initialValue: data.discount || 0,
+                            rules: [
+                                {required: true, message: '请输入优惠金额'},
+                            ],
+                            onChange: () => this.setAfterDiscountTotalPrice(),
+                        })(
+                            <InputNumber
+                                style={{width: '100%'}}
+                                min={0}
+                                step={0.01}
+                                placeholder="请输入优惠金额"
+                                disabled={isDetail}
+                            />
+                        )}
+                    </FormItemLayout>
+
+                    <FormItemLayout
+                        label="优惠后总价"
+                        labelSpaceCount={labelSpaceCount}
+                        float
+                        style={{width: itemWidth}}
+                    >
+                        {getFieldDecorator('afterDiscountTotalPrice', {
+                            initialValue: data.afterDiscountTotalPrice || 0,
+                            rules: [
+                                {required: true, message: '请输入优惠后总价'},
+                            ],
+                        })(
+                            <Input disabled type="hidden"/>
+                        )}
+                        {formatCurrency(getFieldValue('afterDiscountTotalPrice') || 0)}
+                    </FormItemLayout>
+
+                    <div style={{clear: 'both'}}/>
+
                     <FormItemLayout
                         label="出货日期"
                         labelSpaceCount={labelSpaceCount}
-                        style={{width: 300}}
+                        float
+                        style={{width: itemWidth}}
                     >
                         {getFieldDecorator('deliveryTime', {
                             initialValue: moment(data.deliveryTime || new Date()),
@@ -319,12 +412,11 @@ export default class OrderSend extends Component {
                         )}
                     </FormItemLayout>
 
-                    <div style={{clear: 'both'}}/>
-
                     <FormItemLayout
                         label="接收部门"
                         labelSpaceCount={labelSpaceCount}
-                        style={{width: 600}}
+                        float
+                        style={{width: itemWidth}}
                     >
                         {getFieldDecorator('receiveOrgName', {
                             initialValue: receiveOrgName,
@@ -335,13 +427,14 @@ export default class OrderSend extends Component {
                             <Input disabled/>
                         )}
                     </FormItemLayout>
+                    <div style={{clear: 'both'}}/>
 
                     {
                         data.rejectReason ?
                             <FormItemLayout
                                 label="驳回原因"
                                 labelSpaceCount={labelSpaceCount}
-                                style={{width: 600}}
+                                style={{width: itemWidth * 2}}
                             >
                                 {getFieldDecorator('rejectReason', {
                                     initialValue: data.rejectReason,
@@ -357,7 +450,7 @@ export default class OrderSend extends Component {
                             <FormItemLayout
                                 label="作废原因"
                                 labelSpaceCount={labelSpaceCount}
-                                style={{width: 600}}
+                                style={{width: itemWidth * 2}}
                             >
                                 {getFieldDecorator('destroyReason', {
                                     initialValue: data.destroyReason,
@@ -371,17 +464,35 @@ export default class OrderSend extends Component {
                     <FormItemLayout
                         label="备注"
                         labelSpaceCount={labelSpaceCount}
-                        style={{width: 600}}
+                        style={{width: itemWidth * 2}}
                     >
                         {getFieldDecorator('remark', {
                             initialValue: data.remark,
                         })(
-                            <Input style={{height: 100}} disabled={isDetail} type="textarea" placeholder="请输入备注"/>
+                            <Input
+                                style={{height: 100}}
+                                disabled={isDetail}
+                                type="textarea"
+                                placeholder="请输入备注、优惠原因、特殊说明等"
+                            />
                         )}
                     </FormItemLayout>
-
                     {
-                        !isDetail ?
+                        isDetail ?
+                            <FormItemLayout
+                                labelSpaceCount={labelSpaceCount}
+                            >
+                                <a href={`/orders/${data._id}/print`} target="_black">
+                                    <Button
+                                        style={{marginRight: 8}}
+                                        loading={loading}
+                                        type="primary"
+                                    >
+                                        打印
+                                    </Button>
+                                </a>
+                            </FormItemLayout>
+                            :
                             <FormItemLayout
                                 labelSpaceCount={labelSpaceCount}
                             >
@@ -400,7 +511,6 @@ export default class OrderSend extends Component {
                                     重置
                                 </Button>
                             </FormItemLayout>
-                            : null
                     }
                 </Form>
                 <ProductSelect

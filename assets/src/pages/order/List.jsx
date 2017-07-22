@@ -43,30 +43,14 @@ export default class OrderList extends Component {
     toolItems = [
         {
             type: 'primary',
-            text: '添加',
+            text: '发起订单',
             permission: 'ORDER_ADD',
             onClick: () => {
-                this.props.router.push('/orders/+edit/:id');
+                this.props.router.push('/orders/send');
             },
         },
     ];
 
-    /*
-     status: {type: String}, // 订单状态： 0 审核中 1 审核通过 2 驳回 3 作废 4 生产中 5 配送中 6 已完成
-     totalPrice: {type: Number}, // 订单总价
-     sendUserId: {type: String}, // 发起人
-     sendOrgId: {type: String}, // 发起部门
-     receiveOrgId: {type: String}, // 接收部门
-     receiveUserId: {type: String}, // 接收人，如果没有指定接收人，就直接到部门，部门下所有人员都可见
-     sendTime: {type: Date}, // 下单日期
-     deliveryTime: {type: Date}, // 出货日期
-     products: {type: Array}, // 产品列表
-     remark: {type: String}, // 备注
-     rejectReason: {type: String}, // 驳回原因
-     destroyReason: {type: String}, // 作废原因
-     operatorHistory: {type: Array}, // 操作历史 receiveOrgId receiveOrgId status 是操作历史中最后信息
-     });
-     * */
     columns = [
         {
             title: '订单编号',
@@ -81,7 +65,26 @@ export default class OrderList extends Component {
             width: 100,
             dataIndex: 'totalPrice',
             render(text) {
-                return formatCurrency(text);
+                if (text) return formatCurrency(text);
+                return text;
+            },
+        },
+        {
+            title: '优惠金额',
+            width: 100,
+            dataIndex: 'discount',
+            render(text) {
+                if (text) return formatCurrency(text);
+                return text;
+            },
+        },
+        {
+            title: '优惠后总价',
+            width: 100,
+            dataIndex: 'afterDiscountTotalPrice',
+            render(text) {
+                if (text) return formatCurrency(text);
+                return text;
             },
         },
         {title: '发起人', width: 80, dataIndex: 'sendUserName'},
@@ -267,7 +270,7 @@ export default class OrderList extends Component {
                 total={total}
                 tableProps={{
                     scroll: {
-                        x: 1800,
+                        x: 2200,
                     },
                 }}
             />

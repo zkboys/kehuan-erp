@@ -122,6 +122,28 @@ export default class MaterialEdit extends Component {
                         )}
                     </FormItemLayout>
 
+                    <FormItemLayout
+                        label="库存"
+                        labelSpaceCount={labelSpaceCount}
+                        float
+                        style={{width: '50%'}}
+                        tip={`${unitName || '㎡'}`}
+                        tipWidth={20}
+                    >
+                        {getFieldDecorator('stock', {
+                            initialValue: data.stock,
+                            rules: [
+                                {required: true, message: '请输入库存！'},
+                            ],
+                        })(
+                            <InputNumber
+                                style={{width: '100%'}}
+                                step={0.01}
+                                placeholder="请输入库存"
+                            />
+                        )}
+                    </FormItemLayout>
+
                     <div style={{clear: 'both'}}/>
 
                     <FormItemLayout

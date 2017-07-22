@@ -4,7 +4,7 @@ import {ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {formatCurrency} from 'zk-tookit/utils';
 import {units} from '../components/UnitSelect';
-import {hasPermission} from '../../commons';
+import {hasPermission, STOCK_THRESHOLD_COUNT} from '../../commons';
 
 
 @ajax()
@@ -84,6 +84,32 @@ export default class extends Component {
             key: 'singleUnitPrice',
             render(text) {
                 return `${formatCurrency(text)}`;
+            },
+        },
+        {
+            title: '库存总数',
+            dataIndex: 'stockCount',
+            key: 'stockCount',
+            render(text) {
+                if (text < STOCK_THRESHOLD_COUNT) {
+                    return <span style={{color: 'red'}}>{text}</span>;
+                }
+                return text;
+            },
+        },
+        {
+            title: '库存总量',
+            dataIndex: 'stockTotal',
+            key: 'stockTotal',
+            render(text, record) {
+                if (!text) return '';
+                let result = text;
+                const u = units.find(item => item.code === record.unit);
+                if (u) result = `${text}${u.shortName}`;
+                if (record.stockCount < STOCK_THRESHOLD_COUNT) {
+                    return <span style={{color: 'red'}}>{result}</span>;
+                }
+                return result;
             },
         },
         {title: '备注', dataIndex: 'remark', key: 'remark'},

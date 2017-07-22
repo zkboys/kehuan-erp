@@ -89,7 +89,7 @@ module.exports = merge(baseWebpackConfig, {
             favicon: './favicon.png',
             filename: 'index.html',
             template: './index.html',
-            title: '酒店管理系统',
+            title: '科环集成墙板',
             inject: true,
         }),
         new HtmlWebpackPlugin({

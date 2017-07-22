@@ -82,7 +82,7 @@ class LayoutComponent extends Component {
         const innerOverFlow = sideBarCollapsed ? '' : 'scroll';
         const scrollBarWidth = getScrollBarWidth();
         const innerWidth = sideBarCollapsed ? sideBarCurrentWidth - 1 : (sideBarCurrentWidth + scrollBarWidth) - 1; // 1 为outer 的 border
-        const logo = sideBarCollapsed ? '星岚' : '星岚酒店管理系统';
+        const logo = sideBarCollapsed ? '科环' : '科环集成墙板';
 
         if (!currentSideBarMenuNode) currentSideBarMenuNode = {};
         return (

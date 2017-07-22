@@ -1,6 +1,8 @@
 import {session} from 'zk-tookit/utils/storage';
 import mockUrls from '../mock/url-config';
 
+export const STOCK_THRESHOLD_COUNT = 100; // 库存提醒阈值
+
 export const isPro = process.env.NODE_ENV === 'production';
 export const isTest = process.env.NODE_ENV === 'test';
 export const isRC = process.env.NODE_ENV === 'rc';

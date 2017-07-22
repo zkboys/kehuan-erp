@@ -90,7 +90,21 @@ class Login extends Component {
         menuData = menuData.filter(item => item.key);
         const {currentLoginUser} = this.state;
         const menus = menuData.filter(item => item.type === '0');
-        const menuTreeData = convertToTree(menus);
+
+        // 根据order 排序
+        const orderedData = [...menus].sort((a, b) => {
+            const aOrder = a.order || 0;
+            const bOrder = b.order || 0;
+
+            // 如果order都不存在，根据 text 排序
+            if (!aOrder && !bOrder) {
+                return a.text > b.text ? 1 : -1;
+            }
+
+            return bOrder - aOrder;
+        });
+
+        const menuTreeData = convertToTree(orderedData);
         setMenuTreeData(menuTreeData);
         setCurrentLoginUser(currentLoginUser);
         console.log(ref);

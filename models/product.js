@@ -9,6 +9,8 @@ const SchemaModel = new Schema({
     unitPrice: {type: String}, // 单价
     singleUnit: {type: String}, // 单个总量 平米
     singleUnitPrice: {type: String}, // 单个总价
+    stockCount: Number, // 库存总数
+    stockTotal: Number, // 库存总量
     remark: {type: String},
 });
 

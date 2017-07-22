@@ -6,6 +6,7 @@ const SchemaModel = new Schema({
     spec: {type: String}, // 规格
     unit: {type: String}, // 单位
     unitPrice: {type: String}, // 单价
+    stock: Number, // 库存
     remark: {type: String},
 });
 

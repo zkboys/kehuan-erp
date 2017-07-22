@@ -86,6 +86,14 @@ export class LayoutComponent extends Component {
         const u = units.find(item => item.code === unit);
         const unitName = u ? u.shortName : '';
 
+        // 库存总量
+        const stockCount = getFieldValue('stockCount');
+        const singleUnit = getFieldValue('singleUnit');
+        let stockTotal = 0;
+        if (stockCount && singleUnit) {
+            stockTotal = (stockCount * singleUnit * 10000) / 10000;
+        }
+
         return (
             <PageContent>
                 <Form onSubmit={this.handleSubmit}>
@@ -220,6 +228,45 @@ export class LayoutComponent extends Component {
                         )}
                     </FormItemLayout>
 
+                    <div style={{clear: 'both'}}/>
+                    <FormItemLayout
+                        label="库存总数"
+                        labelSpaceCount={labelSpaceCount}
+                        float
+                        style={{width: '33%'}}
+                        tip="比如：100张、100根等"
+                        tipWidth={190}
+                    >
+                        {getFieldDecorator('stockCount', {
+                            initialValue: data.stockCount || 1,
+                            rules: [],
+                        })(
+                            <InputNumber
+                                style={{width: '100%'}}
+                                step={1}
+                                placeholder="请输入单个总量"
+                            />
+                        )}
+                    </FormItemLayout>
+                    <FormItemLayout
+                        label="库存总量"
+                        labelSpaceCount={labelSpaceCount}
+                        float
+                        style={{width: '33%'}}
+                        tip={`${unitName}`}
+                        tipWidth={tipWidth}
+                    >
+                        {getFieldDecorator('stockTotal', {
+                            initialValue: stockTotal,
+                            rules: [],
+                        })(
+                            <Input
+                                style={{width: '100%'}}
+                                disabled
+                                placeholder="请输入库存总量"
+                            />
+                        )}
+                    </FormItemLayout>
                     <div style={{clear: 'both'}}/>
 
                     <FormItemLayout

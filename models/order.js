@@ -5,6 +5,8 @@ const SchemaModel = new Schema({
     orderNum: String, // 订单编号
     status: {type: String}, // 订单状态： 0 审核中 1 审核通过 2 驳回 3 作废 4 生产中 5 配送中 6 已完成
     totalPrice: {type: Number}, // 订单总价
+    discount: Number, // 优惠总价
+    afterDiscountTotalPrice: Number, // 订单优惠后总价
     sendUserId: {type: String}, // 发起人
     sendOrgId: {type: String}, // 发起部门
     receiveOrgId: {type: String}, // 接收部门

@@ -4,6 +4,15 @@ const OrgProxy = require('../proxy/organization');
 const getBaseService = require('./base-service');
 
 module.exports = Object.assign({}, getBaseService(OrderProxy), {
+    async getById(id) {
+        const order = await OrderProxy.getById(id);
+        const sendUser = await UserProxy.getUserById(order.sendUserId);
+        const sendOrg = await OrgProxy.getById(order.sendOrgId);
+        if (sendUser) order.sendUserName = sendUser.name;
+        if (sendOrg) order.sendOrgName = sendOrg.name;
+        return order;
+
+    },
     async getByPage(currentPage = 1, pageSize = 10, queries = {}) {
 
         const results = await OrderProxy.getByPage(currentPage, pageSize, queries);
