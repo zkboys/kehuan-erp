@@ -70,7 +70,14 @@ export default class extends Component {
         },
         {title: '电话', dataIndex: 'mobile', key: 'mobile'},
         {title: '邮箱', dataIndex: 'email', key: 'email'},
-        {title: '性别', dataIndex: 'gender', key: 'gender'},
+        {
+            title: '性别',
+            dataIndex: 'gender',
+            key: 'gender',
+            render(text) {
+                return text === 'female' ? '女' : '男';
+            },
+        },
         {title: '职位', dataIndex: 'position', key: 'position'},
         {
             title: '角色',

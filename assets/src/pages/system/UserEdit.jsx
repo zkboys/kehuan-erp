@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {PageContent} from 'zk-tookit/antd';
-import {Form, Input, Button, message} from 'antd';
+import {Form, Input, Button, message, Radio} from 'antd';
 import {ajax} from 'zk-tookit/react';
 import OrganizationSelect from '../components/OrganizationSelect';
 import validationRule from '../../commons/validation-rule';
 import RoleSelect from '../components/RoleSelect';
 
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 
 export const PAGE_ROUTE = '/system/user/+edit/:id';
 @Form.create()
@@ -89,6 +90,22 @@ export default class SystemUserEdit extends Component {
                             }],
                         })(
                             <Input placeholder="请输入用户名"/>
+                        )}
+                    </FormItem>
+                    <FormItem
+                        label="性别"
+                        {...formItemLayout}
+                    >
+                        {getFieldDecorator('gender', {
+                            initialValue: user.gender || 'male',
+                            rules: [{
+                                required: true, message: '用户名不能为空！',
+                            }],
+                        })(
+                            <RadioGroup>
+                                <Radio value={'male'}>男</Radio>
+                                <Radio value={'female'}>女</Radio>
+                            </RadioGroup>
                         )}
                     </FormItem>
                     <FormItem
