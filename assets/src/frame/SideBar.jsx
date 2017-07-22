@@ -60,8 +60,6 @@ class LayoutComponent extends Component {
                         </SubMenu>
                     );
                 }
-                // 只有开发环境显示
-                if (text === '菜单&权限' && (process.env.NODE_ENV !== 'development')) return null;
                 return (
                     <Menu.Item key={key}>
                         <Link to={path}>
