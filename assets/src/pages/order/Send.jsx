@@ -287,6 +287,10 @@ export default class OrderSend extends Component {
         }
     };
 
+    handlePrint = (id) => {
+        this.setState({printSrc: `/orders/${id}/print?${Date.now()}`});
+    };
+
     render() {
         const {form: {getFieldDecorator, getFieldValue}, $currentLoginUser} = this.props;
         const {loading, data = {}, dataSource, showProductSelect, isDetail} = this.state;
@@ -299,6 +303,7 @@ export default class OrderSend extends Component {
         const itemWidth = 400;
         return (
             <PageContent>
+                <iframe src={this.state.printSrc} style={{display: 'none'}}/>
                 {
                     !isDetail ?
                         <div style={{marginBottom: 8}}>
@@ -478,21 +483,25 @@ export default class OrderSend extends Component {
                         )}
                     </FormItemLayout>
                     {
-                        isDetail ?
+                        (isDetail && data.status === '1') ? // 只有审核通过才打印订单
                             <FormItemLayout
                                 labelSpaceCount={labelSpaceCount}
                             >
-                                <a href={`/orders/${data._id}/print`} target="_black">
-                                    <Button
-                                        style={{marginRight: 8}}
-                                        loading={loading}
-                                        type="primary"
-                                    >
-                                        打印
-                                    </Button>
-                                </a>
+
+                                <Button
+                                    style={{marginRight: 8}}
+                                    loading={loading}
+                                    onClick={() => this.handlePrint(data._id)}
+                                    type="primary"
+                                >
+                                    打印
+                                </Button>
                             </FormItemLayout>
                             :
+                            null
+                    }
+                    {
+                        !isDetail ?
                             <FormItemLayout
                                 labelSpaceCount={labelSpaceCount}
                             >
@@ -511,6 +520,7 @@ export default class OrderSend extends Component {
                                     重置
                                 </Button>
                             </FormItemLayout>
+                            : null
                     }
                 </Form>
                 <ProductSelect

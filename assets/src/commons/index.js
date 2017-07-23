@@ -45,7 +45,12 @@ export function setMenuTreeData(menuTreeData) {
 }
 
 export function toLogin() {
-    return window.location.href = '/login.html';
+    session.clear();
+    window.sessionStorage.clear();
+    if (process.env.NODE_ENV === 'development') {
+        return window.location.href = '/login.html';
+    }
+    return window.location.href = '/signin';
 }
 
 export function isMock(url /* url, data, method, options */) {

@@ -3,6 +3,7 @@ import {Table} from 'antd';
 import moment from 'moment';
 import {ajax} from 'zk-tookit/react';
 import {units} from '../components/UnitSelect';
+import {orderStatus} from '../components/OrderStatusSelect';
 
 export const PAGE_ROUTE = '/orders/:id/print';
 
@@ -77,13 +78,37 @@ export default class Print extends Component {
         const {data} = this.state;
         const dataSource = data.products || [];
         const spanStyle = {display: 'inline-block', padding: '8px 16px'};
+        const labelStyle = {display: 'inline-block', width: 60, textAlign: 'right'};
+        const valueStyle = {display: 'inline-block', width: 120, textAlign: 'left'};
+        const status = orderStatus.find(item => item.value === data.status);
+        const statusLabel = status ? status.label : '未知状态';
+
+
         return (
             <div>
-                <div style={{textAlign: 'right'}}>
-                    <span style={spanStyle}>订单编号：{data.orderNum}</span>
-                    <span style={spanStyle}>出货日期：{moment(data.deliveryTime).format('YYYYY-MM-DD HH:mm:ss')}</span>
-                    <span style={spanStyle}>发起部门：{data.sendOrgName}</span>
-                    <span style={spanStyle}>发起人：{data.sendUserName}</span>
+                <div style={{textAlign: 'left'}}>
+                    <span style={spanStyle}>
+                        <span style={labelStyle}>订单编号：</span>
+                        <span style={valueStyle}>{data.orderNum}</span>
+                    </span>
+                    <span style={spanStyle}>
+                        <span style={labelStyle}>订单状态：</span>
+                        <span style={valueStyle}>{statusLabel}</span>
+                    </span>
+                </div>
+                <div style={{textAlign: 'left'}}>
+                    <span style={spanStyle}>
+                        <span style={labelStyle}>出货日期：</span>
+                        <span style={valueStyle}>{moment(data.deliveryTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+                    </span>
+                    <span style={spanStyle}>
+                        <span style={labelStyle}>发起部门：</span>
+                        <span style={valueStyle}>{data.sendOrgName}</span>
+                    </span>
+                    <span style={spanStyle}>
+                        <span style={labelStyle}>发起人：</span>
+                        <span style={valueStyle}>{data.sendUserName}</span>
+                    </span>
                 </div>
                 <Table
                     size="small"

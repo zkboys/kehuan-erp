@@ -21,12 +21,10 @@ export class LayoutComponent extends Component {
         const {actions} = this.props;
         actions.hidePageHeader();
         actions.hideSideBar();
-
-        // 跳转到订单页面
-        this.props.router.push('/orders');
     }
 
     render() {
+        // TODO 首页内容
         return (
             <PageContent styleName="root">
                 欢迎使用

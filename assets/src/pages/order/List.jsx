@@ -37,6 +37,13 @@ export default class OrderList extends Component {
                     options: orderStatus,
                 },
             },
+            {
+                type: 'data-range',
+                label: '出货日期',
+                field: 'data', // TODO 后端查询
+                width: 300,
+                labelSpaceCount: 4,
+            },
         ],
     ];
 
@@ -47,6 +54,14 @@ export default class OrderList extends Component {
             permission: 'ORDER_ADD',
             onClick: () => {
                 this.props.router.push('/orders/send');
+            },
+        },
+        {
+            type: 'ghost',
+            text: '导出excel',
+            permission: 'ORDER_EXPORT',
+            onClick: () => {
+                // TODO 根据查询条件导出Excel表格
             },
         },
     ];
