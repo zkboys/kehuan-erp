@@ -40,7 +40,8 @@ export default class OrderList extends Component {
             {
                 type: 'data-range',
                 label: '出货日期',
-                field: 'data', // TODO 后端查询
+                field: 'date', // TODO 后端查询
+                placeholder: ['开始时间', '结束时间'],
                 width: 300,
                 labelSpaceCount: 4,
             },
