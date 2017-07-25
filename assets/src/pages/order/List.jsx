@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
+import {Button} from 'antd';
 import {Link} from 'react-router';
 import {Operator, ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
-import {formatCurrency} from 'zk-tookit/utils';
+import {formatCurrency, mosaicUrl} from 'zk-tookit/utils';
 import moment from 'moment';
-import {hasPermission} from '../../commons';
+import {hasPermission, getAjaxBaseUrl} from '../../commons';
 import {orderStatus} from '../components/OrderStatusSelect';
 
 export const PAGE_ROUTE = '/orders';
@@ -40,7 +41,7 @@ export default class OrderList extends Component {
             {
                 type: 'data-range',
                 label: '出货日期',
-                field: 'date', // TODO 后端查询
+                field: 'date',
                 placeholder: ['开始时间', '结束时间'],
                 width: 300,
                 labelSpaceCount: 4,
@@ -58,11 +59,15 @@ export default class OrderList extends Component {
             },
         },
         {
-            type: 'ghost',
-            text: '导出excel',
             permission: 'ORDER_EXPORT',
-            onClick: () => {
-                // TODO 根据查询条件导出Excel表格
+            getComponent: () => {
+                const {params} = this.state;
+                const url = mosaicUrl(`${getAjaxBaseUrl()}/orders/excel`, params);
+                return (
+                    <a href={url}>
+                        <Button type="ghost">导出Excel</Button>
+                    </a>
+                );
             },
         },
     ];
@@ -106,7 +111,7 @@ export default class OrderList extends Component {
         {title: '发起人', width: 80, dataIndex: 'sendUserName'},
         {title: '发起部门', width: 150, dataIndex: 'sendOrgName'},
         {title: '接收部门', width: 150, dataIndex: 'receiveOrgName'},
-        {title: '接收人', width: 80, dataIndex: 'receiveUserName'},
+        // {title: '接收人', width: 80, dataIndex: 'receiveUserName'},
         {
             title: '下单日期',
             width: 150,
@@ -259,7 +264,15 @@ export default class OrderList extends Component {
         },
     ];
 
-    handleSearch = (params) => {
+    handleSearch = (params = {}) => {
+        const {date} = params;
+        if (date && date.length) {
+            params.startDate = date[0].format('YYYY-MM-DD');
+            params.endDate = date[1].format('YYYY-MM-DD');
+        } else {
+            Reflect.deleteProperty(params, 'startDate');
+            Reflect.deleteProperty(params, 'endDate');
+        }
         this.setState({params});
         return this.props.$ajax.get('/orders', params)
             .then(res => {
@@ -273,23 +286,25 @@ export default class OrderList extends Component {
     render() {
         const {total, dataSource} = this.state;
         return (
-            <ListPage
-                hasPermission={hasPermission}
-                queryItems={this.queryItems}
-                showSearchButton
-                showResetButton={false}
-                toolItems={this.toolItems}
-                columns={this.columns}
-                onSearch={this.handleSearch}
-                dataSource={dataSource}
-                rowKey={record => record._id}
-                total={total}
-                tableProps={{
-                    scroll: {
-                        x: 2200,
-                    },
-                }}
-            />
+            <div>
+                <ListPage
+                    hasPermission={hasPermission}
+                    queryItems={this.queryItems}
+                    showSearchButton
+                    showResetButton={false}
+                    toolItems={this.toolItems}
+                    columns={this.columns}
+                    onSearch={this.handleSearch}
+                    dataSource={dataSource}
+                    rowKey={record => record._id}
+                    total={total}
+                    tableProps={{
+                        scroll: {
+                            x: 2200,
+                        },
+                    }}
+                />
+            </div>
         );
     }
 }

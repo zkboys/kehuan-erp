@@ -20,7 +20,6 @@ module.exports = function getBaseController(service) {
                 const pageSize = Number(req.query.pageSize);
 
                 const {results, totalCount} = await service.getByPage(currentPage, pageSize, query);
-
                 res.send({
                     results,
                     totalCount,

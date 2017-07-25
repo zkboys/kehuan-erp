@@ -78,6 +78,7 @@ router.put('/api/products', userRequired, permission('PRODUCT_UPDATE'), product.
 router.delete('/api/products/:id', userRequired, permission('PRODUCT_UPDATE'), product.deleteById);
 
 router.get('/api/orders', userRequired, order.getByPage);
+router.get('/api/orders/excel', userRequired, order.exportExcel);
 router.get('/api/orders/:id', userRequired, order.getById);
 router.post('/api/orders', userRequired, permission('ORDER_ADD'), order.add);
 router.put('/api/orders', permission('ORDER_UPDATE'), userRequired, order.update);
