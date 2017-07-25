@@ -104,7 +104,6 @@ export default class MaterialList extends Component {
                         confirm: {
                             title: `您确定要删除“${name}”？`,
                             onConfirm: () => {
-                                // TODO 修改删除url
                                 this.props.$ajax.del(`/materials/${id}`, null, {successTip}).then(() => {
                                     const dataSource = this.state.dataSource.filter(item => item._id !== id);
                                     this.setState({
@@ -123,7 +122,6 @@ export default class MaterialList extends Component {
 
     handleSearch = (params) => {
         this.setState({params});
-        // TODO 修改查询url
         return this.props.$ajax.get('/materials', params)
             .then(res => {
                 this.setState({
@@ -147,7 +145,6 @@ export default class MaterialList extends Component {
 
         this.setState({loading: true});
 
-        // TODO 修改url
         submitAjax('/materials', values, {successTip}).then(() => {
             this.handleCancel();
             const params = {...this.state.params};

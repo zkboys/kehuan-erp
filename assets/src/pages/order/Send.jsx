@@ -176,7 +176,6 @@ export default class OrderSend extends Component {
                 this.setState({data: res, dataSource: res.products});
             });
         } else {
-            // TODO 生成规则
             const orderNum = moment().format('YYYYMMDDHHmmss');
             const data = {orderNum};
             this.setState({data, isAdd: true});
