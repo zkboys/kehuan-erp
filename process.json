@@ -1,7 +1,7 @@
 {
   "apps": [
     {
-      "name": "app-3090",
+      "name": "kehuan-erp-3090",
       "script": "app.js",
       "node_args": "--harmony",
       "env": {
