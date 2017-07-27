@@ -27,7 +27,7 @@
     "prop-types": "^15.5.8",
     "query-string": "^4.2.2",
     "react": "15.4.2",
-    "react-css-modules": "^4.3.0",
+    "react-css-modules": "^4.6.0",
     "react-dom": "15.4.2",
     "react-redux": "^5.0.3",
     "react-rnd": "^5.0.8",
@@ -39,7 +39,7 @@
     "redux-undo": "^0.6.1",
     "uuid": "^3.0.1",
     "whatwg-fetch": "^1.0.0",
-    "zk-tookit": "^0.0.36"
+    "zk-tookit": "^0.0.39"
   },
   "devDependencies": {
     "add-asset-html-webpack-plugin": "^2.0.1",

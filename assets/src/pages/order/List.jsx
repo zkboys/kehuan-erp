@@ -165,47 +165,49 @@ export default class OrderList extends Component {
                     },
                 };
                 const reject = {
-                    type: 'prompt',
                     label: '驳回',
                     permission: 'ORDER_REJECT',
-                    title: '驳回原因',
-                    okText: '驳回',
-                    inputProps: {
-                        rows: 3,
-                        placeholder: '请输入驳回原因',
-                    },
-                    decorator: {
-                        rules: [
-                            {required: true, message: '请输入驳回原因！'},
-                        ],
-                    },
-                    onConfirm: value => {
-                        const params = {id: record._id, rejectReason: value};
-                        this.props.$ajax.put('/orders/reject', params, {successTip: '驳回成功！'}).then(() => {
-                            this.handleSearch(this.state.params);
-                        });
+                    prompt: {
+                        title: '驳回原因',
+                        okText: '驳回',
+                        inputProps: {
+                            rows: 3,
+                            placeholder: '请输入驳回原因',
+                        },
+                        decorator: {
+                            rules: [
+                                {required: true, message: '请输入驳回原因！'},
+                            ],
+                        },
+                        onConfirm: value => {
+                            const params = {id: record._id, rejectReason: value};
+                            this.props.$ajax.put('/orders/reject', params, {successTip: '驳回成功！'}).then(() => {
+                                this.handleSearch(this.state.params);
+                            });
+                        },
                     },
                 };
                 const destroy = {
-                    type: 'prompt',
                     label: '作废',
                     permission: 'ORDER_DESTROY',
-                    title: '作废原因',
-                    okText: '作废',
-                    inputProps: {
-                        rows: 3,
-                        placeholder: '请输入作废原因',
-                    },
-                    decorator: {
-                        rules: [
-                            {required: true, message: '请输入作废原因！'},
-                        ],
-                    },
-                    onConfirm: value => {
-                        const params = {id: record._id, destroyReason: value};
-                        this.props.$ajax.put('/orders/destroy', params, {successTip: '作废成功！'}).then(() => {
-                            this.handleSearch(this.state.params);
-                        });
+                    prompt: {
+                        title: '作废原因',
+                        okText: '作废',
+                        inputProps: {
+                            rows: 3,
+                            placeholder: '请输入作废原因',
+                        },
+                        decorator: {
+                            rules: [
+                                {required: true, message: '请输入作废原因！'},
+                            ],
+                        },
+                        onConfirm: value => {
+                            const params = {id: record._id, destroyReason: value};
+                            this.props.$ajax.put('/orders/destroy', params, {successTip: '作废成功！'}).then(() => {
+                                this.handleSearch(this.state.params);
+                            });
+                        },
                     },
                 };
                 const update = {
