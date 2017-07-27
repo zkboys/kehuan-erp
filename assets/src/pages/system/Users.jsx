@@ -47,7 +47,7 @@ export default class extends Component {
         {
             type: 'primary',
             text: '添加',
-            permission: 'USER_ADD',
+            visible: hasPermission('USER_ADD'),
             onClick: () => {
                 this.props.router.push('/system/user/+edit/:id');
             },
@@ -101,14 +101,14 @@ export default class extends Component {
                 const items = [
                     {
                         label: '修改',
-                        permission: 'USER_MODIFY',
+                        visible: hasPermission('USER_MODIFY'),
                         onClick: () => {
                             this.props.router.push(`/system/user/+edit/${id}`);
                         },
                     },
                     {
                         label: '删除',
-                        permission: 'USER_DELETE',
+                        visible: hasPermission('USER_DELETE'),
                         confirm: {
                             title: `您确定要删除${userNameTip}？`,
                             onConfirm: () => {
@@ -123,7 +123,7 @@ export default class extends Component {
                     },
                     {
                         label: '重置密码',
-                        permission: 'USER_RESET_PASS',
+                        visible: hasPermission('USER_RESET_PASS'),
                         confirm: {
                             title: `您确定要重置${userNameTip}的密码？`,
                             onConfirm: () => {
@@ -177,7 +177,6 @@ export default class extends Component {
                 dataSource={dataSource}
                 rowKey={(record) => record._id}
                 showPagination
-                hasPermission={hasPermission}
             />
         );
     }

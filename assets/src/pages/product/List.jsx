@@ -48,7 +48,7 @@ export default class extends Component {
         {
             type: 'primary',
             text: '添加',
-            permission: 'PRODUCT_ADD',
+            visible: hasPermission('PRODUCT_ADD'),
             onClick: () => {
                 this.props.router.push('/products/+edit/:id');
             },
@@ -133,14 +133,14 @@ export default class extends Component {
                 const items = [
                     {
                         label: '修改',
-                        permission: 'PRODUCT_UPDATE',
+                        visible: hasPermission('PRODUCT_UPDATE'),
                         onClick: () => {
                             this.props.router.push(`/products/+edit/${id}`);
                         },
                     },
                     {
                         label: '删除',
-                        permission: 'PRODUCT_DELETE',
+                        visible: hasPermission('PRODUCT_DELETE'),
                         confirm: {
                             title: `您确定要删除“${name}”？`,
                             onConfirm: () => {
@@ -155,7 +155,7 @@ export default class extends Component {
                     },
                 ];
 
-                return (<Operator items={items} hasPermission={hasPermission}/>);
+                return (<Operator items={items}/>);
             },
         },
     ];
@@ -174,7 +174,6 @@ export default class extends Component {
         const {total, dataSource} = this.state;
         return (
             <ListPage
-                hasPermission={hasPermission}
                 queryItems={this.queryItems}
                 showSearchButton
                 showResetButton={false}

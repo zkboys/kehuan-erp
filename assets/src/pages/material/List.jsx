@@ -37,7 +37,7 @@ export default class MaterialList extends Component {
             type: 'primary',
             text: '添加',
             icon: 'fa-plus',
-            permission: 'MATERIAL_ADD',
+            visible: hasPermission('MATERIAL_ADD'),
             onClick: () => {
                 this.setState({
                     modalVisible: true,
@@ -90,7 +90,7 @@ export default class MaterialList extends Component {
                 const items = [
                     {
                         label: '编辑',
-                        permission: 'MATERIAL_UPDATE',
+                        visible: hasPermission('MATERIAL_UPDATE'),
                         onClick: () => {
                             this.setState({
                                 modalVisible: true,
@@ -100,7 +100,7 @@ export default class MaterialList extends Component {
                     },
                     {
                         label: '删除',
-                        permission: 'MATERIAL_DELETE',
+                        visible: hasPermission('MATERIAL_DELETE'),
                         confirm: {
                             title: `您确定要删除“${name}”？`,
                             onConfirm: () => {
@@ -115,7 +115,7 @@ export default class MaterialList extends Component {
                     },
                 ];
 
-                return (<Operator items={items} hasPermission={hasPermission}/>);
+                return (<Operator items={items}/>);
             },
         },
     ];
@@ -164,7 +164,6 @@ export default class MaterialList extends Component {
         return (
             <div>
                 <ListPage
-                    hasPermission={hasPermission}
                     queryItems={this.queryItems}
                     showSearchButton
                     showResetButton={false}

@@ -4,7 +4,7 @@ import {ListPage} from 'zk-tookit/antd';
 import {ajax} from 'zk-tookit/react';
 import {formatCurrency} from 'zk-tookit/utils';
 import {units} from '../components/UnitSelect';
-import {hasPermission, STOCK_THRESHOLD_COUNT} from '../../commons';
+import {STOCK_THRESHOLD_COUNT} from '../../commons';
 
 
 @ajax()
@@ -152,7 +152,6 @@ export default class extends Component {
                 width="80%"
             >
                 <ListPage
-                    hasPermission={hasPermission}
                     queryItems={this.queryItems}
                     showSearchButton
                     showResetButton={false}

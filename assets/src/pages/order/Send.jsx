@@ -143,7 +143,6 @@ export default class OrderSend extends Component {
                 const items = [
                     {
                         label: '移除',
-                        permission: 'PRODUCT_DELETE',
                         confirm: {
                             title: `您确定要移除“${name}”？`,
                             onConfirm: () => {

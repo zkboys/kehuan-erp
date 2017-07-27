@@ -53,13 +53,13 @@ export default class OrderList extends Component {
         {
             type: 'primary',
             text: '发起订单',
-            permission: 'ORDER_ADD',
+            visible: hasPermission('ORDER_ADD'),
             onClick: () => {
                 this.props.router.push('/orders/send');
             },
         },
         {
-            permission: 'ORDER_EXPORT',
+            visible: hasPermission('ORDER_EXPORT'),
             getComponent: () => {
                 const {params} = this.state;
                 const url = mosaicUrl(`${getAjaxBaseUrl()}/orders/excel`, params);
@@ -154,7 +154,7 @@ export default class OrderList extends Component {
             render: (text, record) => {
                 const pass = {
                     label: '审核通过',
-                    permission: 'ORDER_PASS',
+                    visible: hasPermission('ORDER_PASS'),
                     confirm: {
                         title: '您确定要审核通过此订单？',
                         onConfirm: () => {
@@ -166,7 +166,7 @@ export default class OrderList extends Component {
                 };
                 const reject = {
                     label: '驳回',
-                    permission: 'ORDER_REJECT',
+                    visible: hasPermission('ORDER_REJECT'),
                     prompt: {
                         title: '驳回原因',
                         okText: '驳回',
@@ -189,7 +189,7 @@ export default class OrderList extends Component {
                 };
                 const destroy = {
                     label: '作废',
-                    permission: 'ORDER_DESTROY',
+                    visible: hasPermission('ORDER_DESTROY'),
                     prompt: {
                         title: '作废原因',
                         okText: '作废',
@@ -212,7 +212,7 @@ export default class OrderList extends Component {
                 };
                 const update = {
                     label: '重新发起',
-                    permission: 'ORDER_UPDATE',
+                    visible: hasPermission('ORDER_UPDATE'),
                     onClick: () => {
                         this.props.router.push(`/orders/send/+edit/${record._id}`);
                     },
@@ -220,7 +220,7 @@ export default class OrderList extends Component {
 
                 const complete = {
                     label: '完成',
-                    permission: 'ORDER_COMPLETE',
+                    visible: hasPermission('ORDER_COMPLETE'),
                     confirm: {
                         title: '您确定要完成此订单？',
                         onConfirm: () => {
@@ -260,7 +260,7 @@ export default class OrderList extends Component {
                         destroy,
                     ];
                 }
-                return (<Operator items={items} hasPermission={hasPermission}/>);
+                return (<Operator items={items}/>);
             }
             ,
         },
@@ -290,7 +290,6 @@ export default class OrderList extends Component {
         return (
             <div>
                 <ListPage
-                    hasPermission={hasPermission}
                     queryItems={this.queryItems}
                     showSearchButton
                     showResetButton={false}

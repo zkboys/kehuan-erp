@@ -29,7 +29,7 @@ export default class extends Component {
         {
             type: 'primary',
             text: '添加',
-            permission: 'ROLE_ADD',
+            visible: hasPermission('ROLE_ADD'),
             onClick: () => {
                 this.props.router.push('/system/role/+edit/:id');
             },
@@ -48,14 +48,13 @@ export default class extends Component {
                 const items = [
                     {
                         label: '修改',
-                        permission: 'ROLE_UPDATE',
+                        visible: hasPermission('ROLE_UPDATE'),
                         onClick: () => {
                             this.props.router.push(`/system/role/+edit/${id}`);
                         },
                     },
                     {
                         label: '删除',
-                        permission: '',
                         confirm: {
                             title: `您确定要删除“${name}”？`,
                             onConfirm: () => {
@@ -70,7 +69,7 @@ export default class extends Component {
                     },
                 ];
 
-                return (<Operator items={items} hasPermission={hasPermission}/>);
+                return (<Operator items={items}/>);
             },
         },
     ];
@@ -89,7 +88,6 @@ export default class extends Component {
         const {total, dataSource} = this.state;
         return (
             <ListPage
-                hasPermission={hasPermission}
                 queryItems={this.queryItems}
                 showSearchButton
                 showResetButton={false}
