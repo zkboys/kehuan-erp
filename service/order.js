@@ -2,6 +2,7 @@ const OrderProxy = require('../proxy/order');
 const UserProxy = require('../proxy/user');
 const OrgProxy = require('../proxy/organization');
 const getBaseService = require('./base-service');
+const orderStatus = require('../common/order-status');
 
 module.exports = Object.assign({}, getBaseService(OrderProxy), {
     async getById(id) {
@@ -56,12 +57,20 @@ module.exports = Object.assign({}, getBaseService(OrderProxy), {
                 }
             }
 
+            let statusName = '';
+            for (let i = 0; i < orderStatus.length; i++) {
+                if (orderStatus[i].value === item.status) {
+                    statusName = orderStatus[i].label;
+                    break;
+                }
+            }
             // find方式不管用了。。。
             // const sendUser = sendUsers.find(i => String(i._id) === String(item.sendUserId));
             // const sendOrg = sendOrgs.find(i => String(i._id) === item.sendOrgId);
             // const receiveUser = receiveUsers.find(i => String(i._id) === item.receiveUserId);
             // const receiveOrg = receiveOrgs.find(i => String(i._id) === item.receiveOrgId);
             return Object.assign({}, item, {
+                statusName,
                 sendUserName: sendUser ? sendUser.name : '',
                 sendOrgName: sendOrg ? sendOrg.name : '',
                 receiveUserName: receiveUser ? receiveUser.name : '',

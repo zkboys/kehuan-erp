@@ -49,7 +49,7 @@ module.exports = function getBaseProxy(model) {
         },
 
         deleteById(id) {
-            return model.findOneAndUpdate({_id: id}, {is_deleted: true, update_at: new Date()}).lean()
+            return model.remove({_id: id}).lean()
         },
 
         update(data) {

@@ -35,6 +35,7 @@ export default class OrderList extends Component {
                 width: 200,
                 placeholder: '请选择订单状态',
                 elementProps: {
+                    allowClear: true,
                     options: orderStatus,
                 },
             },
@@ -139,12 +140,7 @@ export default class OrderList extends Component {
             title: '状态',
             width: 80,
             fixed: 'right',
-            dataIndex: 'status',
-            render(text) {
-                const status = orderStatus.find(item => item.value === text);
-                if (status) return status.label;
-                return '';
-            },
+            dataIndex: 'statusName',
         },
         {
             title: '操作',

@@ -92,7 +92,7 @@ module.exports = Object.assign({}, baseController, {
                     deliveryTime || '',
                     item.rejectReason || '',
                     item.destroyReason || '',
-                    item.status || '',
+                    item.statusName || '',
                     item.remark || '',
                 ];
             });
