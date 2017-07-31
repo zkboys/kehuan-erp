@@ -57,9 +57,16 @@ exports.bcompare = function (str, hash) {
 exports.getGenerationsByKey = function (rows, key) {
     // 这个函数会被多次调用，对rows做深拷贝，否则会产生副作用。
     rows = cloneDeep(rows);
-    const parentNode = rows.find(item => item.key === key);
-    if (!parentNode) return [];
 
+    let parentNode;
+    for (let i = 0; i < rows.length; i++) {
+        if (rows[i].key === key) {
+            parentNode = rows[i];
+            break;
+        }
+    }
+
+    if (!parentNode) return [];
 
     let nodes = [parentNode];
     let generationNodes = [cloneDeep(parentNode)];

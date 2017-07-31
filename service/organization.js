@@ -24,8 +24,7 @@ exports.deleteById = async function (id) {
     const newData = allData.map(item => {
         return Object.assign({}, {key: String(item._id), parentKey: String(item.parentId)}, item);
     });
-    const generations = tools.getGenerationsByKey(newData, id);
+    const generations = tools.getGenerationsByKey(newData, String(id));
     const ids = generations.map(item => item._id);
-    console.log(ids);
     return await OrganizationProxy.deleteByIds(ids);
 };
