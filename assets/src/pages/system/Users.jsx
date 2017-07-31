@@ -101,7 +101,7 @@ export default class extends Component {
                 const items = [
                     {
                         label: '修改',
-                        visible: hasPermission('USER_MODIFY'),
+                        visible: hasPermission('USER_UPDATE'),
                         onClick: () => {
                             this.props.router.push(`/system/user/+edit/${id}`);
                         },
