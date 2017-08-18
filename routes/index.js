@@ -64,12 +64,14 @@ router.post('/api/system/roles', userRequired, permission('ROLE_ADD'), role.addA
 router.put('/api/system/roles', userRequired, permission('ROLE_UPDATE'), role.update);
 router.delete('/api/system/roles/:id', userRequired, permission('ROLE_DELETE'), role.delete);
 
+// 原料
 router.get('/api/materials', userRequired, material.getByPage);
 router.get('/api/materials/:id', userRequired, material.getById);
 router.post('/api/materials', userRequired, permission('MATERIAL_ADD'), material.add);
 router.put('/api/materials', userRequired, permission('MATERIAL_UPDATE'), material.update);
 router.delete('/api/materials/:id', userRequired, permission('MATERIAL_DELETE'), material.deleteById);
 
+// 产品
 router.get('/api/products', userRequired, product.getByPage);
 router.get('/api/products/ids', userRequired, product.getByIds);
 router.get('/api/products/:id', userRequired, product.getById);
@@ -77,6 +79,7 @@ router.post('/api/products', userRequired, permission('PRODUCT_UPDATE'), product
 router.put('/api/products', userRequired, permission('PRODUCT_UPDATE'), product.update);
 router.delete('/api/products/:id', userRequired, permission('PRODUCT_UPDATE'), product.deleteById);
 
+// 订单
 router.get('/api/orders', userRequired, order.getByPage);
 router.get('/api/orders/excel', userRequired, order.exportExcel);
 router.get('/api/orders/:id', userRequired, order.getById);

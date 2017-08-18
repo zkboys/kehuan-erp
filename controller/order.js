@@ -3,8 +3,13 @@ const moment = require('moment');
 const nodeExcel = require('excel-export');
 const OrderService = require('../service/order');
 const ProductService = require('../service/product');
+const orgService = require('../service/organization');
+const userService = require('../service/user');
 const getBaseController = require('./base-controller');
 const controllerDecorator = require('./controller-decorator');
+const sendMail = require('../mail/mail');
+const orderStatus = require('../common/order-status');
+const units = require('../common/units');
 
 const baseController = getBaseController(OrderService);
 
@@ -42,6 +47,111 @@ function getQuery(req) {
 }
 
 module.exports = Object.assign({}, baseController, {
+
+    add: controllerDecorator(async(req, res, next) => {
+            const data = req.body;
+            const savedData = await OrderService.add(data);
+            const {receiveOrgId} = savedData;
+            const reOrg = await orgService.getById(receiveOrgId);
+            // 说明是顶节点，科环总部，发送邮件
+            if (!reOrg.parentId) {
+                let statusLabel;
+                for (let i = 0; i < orderStatus.length; i++) {
+                    if (orderStatus[i].value === savedData.status) {
+                        statusLabel = orderStatus[i].label;
+                        break;
+                    }
+                }
+                const sendOrg = await orgService.getById(savedData.sendOrgId);
+                const sendOrgName = sendOrg && sendOrg.name;
+                const sendUser = await userService.getUserById(savedData.sendUserId);
+                const sendUserName = sendUser && (sendUser.name || sendUser.loginName);
+                const ptr = [];
+                for (let i = 0; i < savedData.products.length; i++) {
+                    const product = savedData.products[i];
+                    const name = product.name;
+                    const spec = product.spec;
+                    const model = product.model;
+                    let unitCode = product.unit;
+                    let unit;
+                    for (let j = 0; j < units.length; j++) {
+                        if (units[j].code === unitCode) {
+                            unit = units[j];
+                            break;
+                        }
+                    }
+                    const unitName = unit.name;
+                    const unitShortName = unit.shortName;
+                    const singleUnit = `${product.singleUnit}${unitShortName}`;
+                    const count = product.count;
+
+                    const value = product.singleUnit * 10000 * count; // 避免js精度问题
+                    const total = unit ? `${value / 10000}${unitShortName}` : value;
+                    ptr.push(`
+                        <tr>
+                            <td>${name}</td>
+                            <td>${spec}</td>
+                            <td>${model}</td>
+                            <td>${unitName}</td>
+                            <td>${singleUnit}</td>
+                            <td>${count}</td>
+                            <td>${total}</td>
+                        </tr>
+                    `);
+                }
+                let html = `
+                    <div>
+                        <div style="test-align: left">
+                            <span style="display: inline-block; padding: 8px 16px">
+                                <span style="display: inline-block; width: 80px; text-align: right">订单编号：</span>
+                                <span style="display: inline-block; width: 160px text-align: left">${savedData.orderNum}</span>
+                            </span>
+                        </div>
+                        <div style="test-align: left">    
+                            <span style="display: inline-block; padding: 8px 16px">
+                                <span style="display: inline-block; width: 80px; text-align: right">订单状态：</span>
+                                <span style="display: inline-block; width: 160px text-align: left">${statusLabel}</span>
+                            </span>
+                        </div>
+                        <div style="test-align: left">
+                            <span style="display: inline-block; padding: 8px 16px">
+                                <span style="display: inline-block; width: 80px; text-align: right">出货日期：</span>
+                                <span style="display: inline-block; width: 160px text-align: left">${moment(savedData.deliveryTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+                            </span>
+                        </div>
+                        <div style="test-align: left">
+                            <span style="display: inline-block; padding: 8px 16px">
+                                <span style="display: inline-block; width: 80px; text-align: right">发起部门：</span>
+                                <span style="display: inline-block; width: 160px text-align: left">${sendOrgName}</span>
+                            </span>
+                        </div>
+                        <div style="test-align: left">
+                            <span style="display: inline-block; padding: 8px 16px">
+                                <span style="display: inline-block; width: 80px; text-align: right">发起人：</span>
+                                <span style="display: inline-block; width: 160px text-align: left">${sendUserName}</span>
+                            </span>
+                        </div>
+                        <table border="1">
+                            <tr>
+                                <td>名称</td>
+                                <td>规格</td>
+                                <td>型号</td>
+                                <td>单位</td>
+                                <td>单个总量</td>
+                                <td>数量</td>
+                                <td>总量</td>
+                            </tr>
+                            ${ptr.join('')}
+                        </table>
+                    </div>
+                `;
+
+                // TODO 修改收件人的邮箱
+                sendMail('876213774@qq.com', '总部接到新订单', html);
+            }
+            res.send(savedData);
+        }
+    ),
     getByPage(req, res, next){
         const query = getQuery(req);
         baseController.getByPage(req, res, next, query);

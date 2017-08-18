@@ -2,6 +2,12 @@ const uuidv4 = require('uuid/v4');
 const tools = require('../common/tools');
 const OrganizationProxy = require('../proxy/organization');
 
+
+exports.getById = async function (id) {
+    return await OrganizationProxy.getById(id);
+};
+
+
 exports.getAllOrganizations = async function () {
     return await OrganizationProxy.getAllOrganizations();
 };
