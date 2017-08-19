@@ -26,3 +26,4 @@ assets/src/page/AllRoutes.js
 *.sublime-workspace
 *.swp
 /mail/config.js
+/mail/cfg.js

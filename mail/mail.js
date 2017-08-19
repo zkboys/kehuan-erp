@@ -11,7 +11,7 @@
 
 const nodemailer = require('nodemailer');
 let smtpTransport = require('nodemailer-smtp-transport');
-const config = require('./config');
+const config = require('./cfg');
 
 smtpTransport = nodemailer.createTransport(smtpTransport({
     service: config.email.service,
