@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A React.js project",
   "author": "wangshubin",
+  "license": "ISC",
   "private": true,
   "scripts": {
     "clear-cache": "rimraf ./node_modules/.cache && rimraf ./.happypack",
@@ -39,7 +40,7 @@
     "redux-undo": "^0.6.1",
     "uuid": "^3.0.1",
     "whatwg-fetch": "^1.0.0",
-    "zk-tookit": "^0.0.43"
+    "zk-tookit": "^0.0.57"
   },
   "devDependencies": {
     "add-asset-html-webpack-plugin": "^2.0.1",

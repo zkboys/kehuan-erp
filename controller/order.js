@@ -53,8 +53,10 @@ module.exports = Object.assign({}, baseController, {
             const savedData = await OrderService.add(data);
             const {receiveOrgId} = savedData;
             const reOrg = await orgService.getById(receiveOrgId);
-            // 说明是顶节点，科环总部，发送邮件
-            if (!reOrg.parentId) {
+            const admin = await userService.getUserByLoginNameFromAllUsers('admin');
+
+            // 说明是顶节点，科环总部，超级管理员存在，给超级管理员发邮件
+            if (admin && admin.email && !reOrg.parentId) {
                 let statusLabel;
                 for (let i = 0; i < orderStatus.length; i++) {
                     if (orderStatus[i].value === savedData.status) {
@@ -146,8 +148,7 @@ module.exports = Object.assign({}, baseController, {
                     </div>
                 `;
 
-                // TODO 修改收件人的邮箱
-                sendMail('876213774@qq.com', '总部接到新订单', html);
+                sendMail(admin.email, '总部接到新订单', html);
             }
             res.send(savedData);
         }
